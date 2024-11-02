@@ -21,3 +21,21 @@ export interface RandomStyle {
   transform: string;
   opacity: number;
 }
+
+// creating the interface for the user store
+export interface UserStore {
+  isAuthorized: boolean;
+  user: {
+    _id: string;
+    username: string;
+    email: string;
+    phoneNumber: string;
+  } | null;
+  isLoggedIn: (user: {
+    _id: string;
+    email: string;
+    username: string;
+    phoneNumber: string;
+  }) => void;
+  isLoggedOut: () => void;
+}

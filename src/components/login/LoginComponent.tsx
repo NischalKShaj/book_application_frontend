@@ -3,6 +3,7 @@
 // importing the required modules
 "use client";
 import axiosInstance from "@/lib/axios/axiosInstance";
+import { userStore } from "@/store/userStore";
 import { FormLogin, RandomStyle } from "@/types/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,6 +17,7 @@ const LoginComponent = () => {
   });
   const [error, setError] = useState("");
   const router = useRouter();
+  const isLoggedIn = userStore((state) => state.isLoggedIn);
 
   useEffect(() => {
     // Generate random values on the client side
@@ -48,6 +50,14 @@ const LoginComponent = () => {
 
       if (response.status === 202) {
         console.log("response", response.data);
+        isLoggedIn({
+          _id: response.data.user.id,
+          email: response.data.user.email,
+          username: response.data.user.username,
+          phoneNumber: response.data.user.phone,
+        });
+        const { token } = response.data;
+        localStorage.setItem("access_token", token);
         router.push("/");
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

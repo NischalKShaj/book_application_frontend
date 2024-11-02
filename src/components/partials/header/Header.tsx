@@ -6,10 +6,13 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { userStore } from "@/store/userStore";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const user = userStore((state) => state?.user);
+  const isLoggedOut = userStore((state) => state.isLoggedOut);
 
   // for the hamburger menu
   const toggle = () => {
@@ -24,6 +27,12 @@ const Header = () => {
   // for moving to the signup page
   const signup = () => {
     router.push("/signup");
+  };
+
+  // for logging out the user
+  const logout = () => {
+    isLoggedOut();
+    router.push("/login");
   };
 
   return (
@@ -49,20 +58,32 @@ const Header = () => {
         </nav>
 
         {/* Login and Signup Buttons for larger screens */}
-        <div className="hidden md:flex space-x-3">
-          <button
-            onClick={login}
-            className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 text-lg rounded-md"
-          >
-            Login
-          </button>
-          <button
-            onClick={signup}
-            className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 text-lg rounded-md"
-          >
-            Signup
-          </button>
-        </div>
+        {user ? (
+          <div className="hidden md:flex space-x-3">
+            <span>{user.username}</span>
+            <button
+              onClick={logout}
+              className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 text-lg rounded-md"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div className="hidden md:flex space-x-3">
+            <button
+              onClick={login}
+              className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 text-lg rounded-md"
+            >
+              Login
+            </button>
+            <button
+              onClick={signup}
+              className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 text-lg rounded-md"
+            >
+              Signup
+            </button>
+          </div>
+        )}
 
         {/* Hamburger Icon for Mobile */}
         <button
