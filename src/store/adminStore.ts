@@ -1,17 +1,18 @@
-//<================================ creating store for the user =================================>
+// <============================ creating a store for the admin =====================>
+
+// importing the required modules
 import { create } from "zustand";
-import { UserStore } from "@/types/types";
+import { AdminStore } from "@/types/types";
 
 // creating the store
-
-export const userStore = create<UserStore>((set, get) => {
+export const adminStore = create<AdminStore>((set, get) => {
   let initialState = {
     isAuthorized: false,
-    user: null,
+    admin: null,
   };
 
   if (typeof window !== "undefined") {
-    const savedState = localStorage.getItem("userState");
+    const savedState = localStorage.getItem("adminState");
     if (savedState) {
       try {
         initialState = JSON.parse(savedState);
@@ -23,19 +24,19 @@ export const userStore = create<UserStore>((set, get) => {
 
   return {
     ...initialState,
-    isLoggedIn: (user) => {
-      set({ isAuthorized: true, user });
+    isLoggedIn: (admin) => {
+      set({ isAuthorized: true, admin });
       if (typeof window !== "undefined") {
         localStorage.setItem(
-          "userState",
-          JSON.stringify({ ...get(), isAuthorized: true, user })
+          "adminState",
+          JSON.stringify({ ...get(), isAuthorized: true, admin })
         );
       }
     },
     isLoggedOut: () => {
-      set({ isAuthorized: false, user: null });
+      set({ isAuthorized: false, admin: null });
       if (typeof window !== "undefined") {
-        localStorage.removeItem("userState");
+        localStorage.removeItem("adminState");
       }
     },
   };

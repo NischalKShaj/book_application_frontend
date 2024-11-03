@@ -32,6 +32,7 @@ const Header = () => {
   // for logging out the user
   const logout = () => {
     isLoggedOut();
+    localStorage.removeItem("access_token");
     router.push("/login");
   };
 

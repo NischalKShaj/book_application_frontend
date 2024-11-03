@@ -39,3 +39,12 @@ export interface UserStore {
   }) => void;
   isLoggedOut: () => void;
 }
+
+export interface AdminStore {
+  isAuthorized: boolean;
+  admin: {
+    email: string;
+  } | null;
+  isLoggedIn: (admin: { email: string }) => void;
+  isLoggedOut: () => void;
+}
