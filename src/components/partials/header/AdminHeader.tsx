@@ -4,15 +4,22 @@
 "use client";
 import { FaBars, FaTimes } from "react-icons/fa";
 import Link from "next/link";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { adminStore } from "@/store/adminStore";
 
 const AdminHeader = () => {
   const [open, setOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
+  const path = usePathname();
   const admin = adminStore((state) => state.admin);
   const isLoggedOut = adminStore((state) => state.isLoggedOut);
+
+  useEffect(() => {
+    // Ensure this component renders only on the client
+    setIsClient(true);
+  }, []);
 
   // for the hamburger menu
   const toggle = () => {
@@ -25,6 +32,11 @@ const AdminHeader = () => {
     localStorage.removeItem("admin_access_token");
     router.push("/admin");
   };
+
+  if (!isClient) {
+    // Prevent mismatched rendering on the server
+    return null;
+  }
 
   return (
     <div className="bg-[#1a237e] text-white p-4">
@@ -52,6 +64,14 @@ const AdminHeader = () => {
 
         {admin && (
           <div className="hidden md:flex space-x-3">
+            {path === "/admin/product" && ( // Check the current path
+              <button
+                onClick={() => router.push("/admin/product/addProducts")}
+                className="bg-[#43a047] hover:bg-[#388e3c] text-white px-6 py-2 text-lg rounded-md"
+              >
+                Add Product
+              </button>
+            )}
             <button
               onClick={logout}
               className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 text-lg rounded-md"

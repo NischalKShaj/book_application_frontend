@@ -2,21 +2,35 @@
 
 // importing the required modules
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import axiosInstance from "./axiosInstance";
 
 const useAxiosInterceptor = () => {
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const isAdminPage = pathname?.startsWith("/admin");
       const requestInterceptor = axiosInstance.interceptors.request.use(
         (config) => {
-          const token = localStorage.getItem("access_token");
+          const token = localStorage.getItem(
+            isAdminPage ? "admin_access_token" : "access_token"
+          );
           if (token) {
             config.headers["Authorization"] = `Bearer ${token}`;
           }
+
+          if (
+            config.data instanceof FormData &&
+            !config.headers["Content-Type"]
+          ) {
+            config.headers["Content-Type"] = "multipart/form-data";
+          } else if (!config.headers["Content-Type"]) {
+            config.headers["Content-Type"] = "application/json";
+          }
+
           return config;
         },
         (error) => {

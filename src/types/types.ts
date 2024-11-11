@@ -40,6 +40,7 @@ export interface UserStore {
   isLoggedOut: () => void;
 }
 
+// interface for admin Store
 export interface AdminStore {
   isAuthorized: boolean;
   admin: {
@@ -47,4 +48,21 @@ export interface AdminStore {
   } | null;
   isLoggedIn: (admin: { email: string }) => void;
   isLoggedOut: () => void;
+}
+
+// interface for product
+export interface ProductUpload {
+  bookName: string;
+  bookDescription: string;
+  amount: number;
+  stock: number;
+}
+
+export interface Product {
+  _id: string;
+  bookName: string;
+  bookDescription: string;
+  amount: number;
+  stock: number;
+  images: string[];
 }
