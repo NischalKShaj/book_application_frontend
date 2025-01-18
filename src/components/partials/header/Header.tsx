@@ -4,15 +4,33 @@
 "use client";
 import { FaBars, FaTimes } from "react-icons/fa";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { userStore } from "@/store/userStore";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const user = userStore((state) => state?.user);
   const isLoggedOut = userStore((state) => state.isLoggedOut);
+
+  // for closing the dropdown if clicked outside the dd
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // for the hamburger menu
   const toggle = () => {
@@ -34,6 +52,11 @@ const Header = () => {
     isLoggedOut();
     localStorage.removeItem("access_token");
     router.push("/login");
+  };
+
+  // for moving to the order history page
+  const handleOrderPage = () => {
+    router.push("/order");
   };
 
   return (
@@ -62,8 +85,13 @@ const Header = () => {
 
         {/* Login and Signup Buttons for larger screens */}
         {user ? (
-          <div className="hidden md:flex space-x-3">
-            <span>{user.username}</span>
+          <div className="hidden md:flex items-center space-x-3 relative">
+            <span
+              className="cursor-pointer"
+              onClick={() => setDropdownOpen((prev) => !prev)}
+            >
+              {user.username}
+            </span>
             <Link href="/cart">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -80,12 +108,34 @@ const Header = () => {
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
               </svg>
             </Link>
-            <button
-              onClick={logout}
-              className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 text-lg rounded-md"
-            >
-              Logout
-            </button>
+
+            {/* Dropdown Menu */}
+            {dropdownOpen && (
+              <div
+                ref={dropdownRef}
+                className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-lg border border-gray-200 w-48"
+              >
+                {/* Profile Section */}
+                <button className="block w-full rounded-t-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black">
+                  Profile
+                </button>
+                {/* Orders Section */}
+                <button
+                  onClick={handleOrderPage}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black"
+                >
+                  Orders
+                </button>
+                <hr className="border-gray-200" />
+                {/* Logout Button */}
+                <button
+                  onClick={logout}
+                  className="block w-full text-left px-4 py-2 text-white bg-[#d84315] hover:bg-[#bf360c] rounded-b-lg"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="hidden md:flex space-x-3">

@@ -84,3 +84,17 @@ export interface Address {
   city: string;
   state: string;
 }
+
+// interface for the order history
+export interface OrderItem {
+  id: number;
+  date: string;
+  total: number;
+  status: string;
+  items: {
+    id: number;
+    title: string;
+    price: number;
+    quantity: number;
+  }[];
+}

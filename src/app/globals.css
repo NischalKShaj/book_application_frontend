@@ -17,3 +17,64 @@ body {
 main {
   flex: 1;
 }
+
+@keyframes gradientMove {
+  100% {
+    background-position: 0% 0;
+  }
+  0% {
+    background-position: 100% 0;
+  }
+}
+
+/* Default status colors for light and dark shades */
+:root {
+  --status-color-light: #fbbf24; /* Light amber */
+  --status-color-dark: #b45309; /* Dark amber */
+}
+
+.bg-amber-500 {
+  background: linear-gradient(
+    to right,
+    var(--status-color-light),
+    var(--status-color-dark)
+  );
+}
+
+.bg-blue-600 {
+  background: linear-gradient(to right, #3b82f6, #1e3a8a);
+}
+
+.bg-teal-500 {
+  background: linear-gradient(
+    to right,
+    #16a3b1,
+    #008080
+  ); /* Turquoise to Teal */
+}
+
+.bg-emerald-500 {
+  background: linear-gradient(
+    to right,
+    #10b981,
+    #047d4c
+  ); /* Emerald to Dark Green */
+}
+
+.bg-rose-500 {
+  background: linear-gradient(to right, #f87171, #9b2c2c);
+}
+
+.bg-yellow-500 {
+  background: linear-gradient(to right, #f7d354, #e0a800);
+}
+
+.bg-gray-400 {
+  background: linear-gradient(to right, #d1d5db, #6b7280);
+}
+
+/* Apply the gradient animation */
+.animate-gradient {
+  animation: gradientMove 3s linear infinite; /* Adjust the timing as needed */
+  background-size: 200% 100%;
+}

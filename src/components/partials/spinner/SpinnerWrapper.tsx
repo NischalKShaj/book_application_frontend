@@ -13,7 +13,7 @@ const SpinnerWrapper: React.FC<SpinnerWrapperProps> = ({ children }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000); // Set loading to false after 2 seconds
+    }, 1000); // Set loading to false after 2 seconds
 
     // Cleanup function to clear the timer
     return () => {
