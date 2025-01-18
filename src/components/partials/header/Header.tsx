@@ -42,7 +42,9 @@ const Header = () => {
         {/* Logo */}
         <div className="flex items-center space-x-2">
           <div className="h-6 w-6" />
-          <span className="text-xl font-bold">Book Application</span>
+          <Link href="/" className="text-xl font-bold">
+            Book Application
+          </Link>
         </div>
 
         {/* Navbar Links for larger screens */}

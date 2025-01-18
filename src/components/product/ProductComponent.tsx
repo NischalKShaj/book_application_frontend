@@ -62,7 +62,7 @@ const ProductComponent = () => {
                     Book Title {book.bookName}
                   </h3>
                   <h3 className="font-medium text-[#333333] mb-2">
-                    Price {book.amount}
+                    ₹ {book.amount}/-
                   </h3>
 
                   {/* Button or Cart Icon */}

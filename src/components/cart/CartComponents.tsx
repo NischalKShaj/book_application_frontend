@@ -20,13 +20,13 @@ const CartComponents = () => {
     {
       id: 1,
       title: "Book Title 1",
-      price: 19.99,
+      price: 1000,
       quantity: 1,
     },
     {
       id: 2,
       title: "Book Title 2",
-      price: 24.99,
+      price: 2000,
       quantity: 2,
     },
   ]);
@@ -52,11 +52,6 @@ const CartComponents = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const id = user?._id;
-  //   loadCart(id);
-  // }, [user?._id]);
-
   const handleQuantityChange = (id: number, change: number) => {
     setCartItems((items) =>
       items
@@ -77,6 +72,11 @@ const CartComponents = () => {
 
   const handleContinueShopping = () => {
     router.push("/product");
+  };
+
+  // function for proceeding to the checkout page
+  const handleCheckoutPage = () => {
+    router.push("/checkout");
   };
 
   return (
@@ -156,7 +156,10 @@ const CartComponents = () => {
                   >
                     Continue Shopping
                   </button>
-                  <button className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-full">
+                  <button
+                    onClick={handleCheckoutPage}
+                    className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-full"
+                  >
                     Proceed to Checkout
                   </button>
                 </div>

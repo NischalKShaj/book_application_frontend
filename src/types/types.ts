@@ -74,3 +74,13 @@ export interface CartItem {
   price: number;
   quantity: number;
 }
+
+// interface for the address
+export interface Address {
+  id: number;
+  fullAddress: string;
+  locality: string;
+  pincode: string;
+  city: string;
+  state: string;
+}
