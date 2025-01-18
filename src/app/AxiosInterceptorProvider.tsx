@@ -7,9 +7,11 @@ import useAxiosInterceptor from "@/lib/axios/useAxiosInterceptor";
 
 export function AxiosInterceptorProvider({
   children,
+  className,
 }: {
   children: ReactNode;
+  className: string;
 }) {
   useAxiosInterceptor();
-  return <>{children}</>;
+  return <div className={className}>{children}</div>;
 }

@@ -3,7 +3,6 @@
 "use client";
 // importing the required modules
 import React, { useState, useEffect } from "react";
-import Footer from "../partials/footer/Footer";
 import Image from "next/image";
 import { Product } from "@/types/types";
 import axiosInstance from "@/lib/axios/axiosInstance";
@@ -87,7 +86,6 @@ const ProductComponent = () => {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 };

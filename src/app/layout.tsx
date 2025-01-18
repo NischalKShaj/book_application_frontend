@@ -4,6 +4,7 @@ import "./globals.css";
 import SpinnerWrapper from "@/components/partials/spinner/SpinnerWrapper";
 import { AxiosInterceptorProvider } from "./AxiosInterceptorProvider";
 import ConditionalHeader from "@/components/partials/header/ConditionalHeader";
+import ConditionalFooter from "@/components/partials/footer/ConditionalFooter";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,11 +30,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
         <SpinnerWrapper>
           <ConditionalHeader />
-          <AxiosInterceptorProvider>{children}</AxiosInterceptorProvider>
+          <AxiosInterceptorProvider className="flex-grow">
+            {children}
+          </AxiosInterceptorProvider>
+          <ConditionalFooter />
         </SpinnerWrapper>
       </body>
     </html>

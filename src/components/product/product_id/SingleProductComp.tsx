@@ -2,7 +2,6 @@
 "use client";
 
 // importing the required modules
-import Footer from "@/components/partials/footer/Footer";
 import axiosInstance from "@/lib/axios/axiosInstance";
 import { Product } from "@/types/types";
 import React, { useEffect, useState } from "react";
@@ -116,7 +115,6 @@ const SingleProductComp = ({ id }: { id: string }) => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

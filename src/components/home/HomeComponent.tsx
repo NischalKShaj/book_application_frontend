@@ -2,10 +2,10 @@
 
 // importing the required modules
 import React from "react";
-import Footer from "../partials/footer/Footer";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import SpinnerWrapper from "../partials/spinner/SpinnerWrapper";
+import axiosInstance from "@/lib/axios/axiosInstance";
 
 const HomeComponent = () => {
   const router = useRouter();
@@ -13,6 +13,18 @@ const HomeComponent = () => {
   // for moving to the product page
   const handleProduct = () => {
     router.push("/product");
+  };
+
+  // for adding the product to the cart
+  const handleCart = async () => {
+    try {
+      const response = await axiosInstance.post("/cart/add-item");
+      if (response.status === 202) {
+        console.log("response", response.data);
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   return (
@@ -69,7 +81,10 @@ const HomeComponent = () => {
                       Book Title {book}
                     </h3>
                     <p className="text-sm text-gray-600 mb-2">Author Name</p>
-                    <button className="w-full bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-md">
+                    <button
+                      onClick={handleCart}
+                      className="w-full bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-md"
+                    >
                       Add to Cart
                     </button>
                   </div>
@@ -79,7 +94,6 @@ const HomeComponent = () => {
           </section>
         </main>
       </SpinnerWrapper>
-      <Footer />
     </div>
   );
 };
