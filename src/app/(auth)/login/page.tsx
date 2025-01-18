@@ -2,12 +2,15 @@
 
 // importing the required modules
 import LoginComponent from "@/components/login/LoginComponent";
+import SpinnerWrapper from "@/components/partials/spinner/SpinnerWrapper";
 import React from "react";
 
 const Login = () => {
   return (
     <div>
-      <LoginComponent />
+      <SpinnerWrapper>
+        <LoginComponent />
+      </SpinnerWrapper>
     </div>
   );
 };

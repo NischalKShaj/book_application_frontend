@@ -2,7 +2,6 @@
 "use client";
 
 // importing the required modules
-import AdminHeader from "@/components/partials/header/AdminHeader";
 import React, { useState } from "react";
 import Image from "next/image";
 import { ProductUpload } from "@/types/types";
@@ -80,7 +79,6 @@ const AddProduct = () => {
 
   return (
     <div>
-      <AdminHeader />
       <div className="max-w-4xl mt-11 mx-auto p-6 bg-white rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold text-[#1a237e] mb-6">Add New Book</h1>
         <form onSubmit={handleFormSubmit} className="space-y-6">

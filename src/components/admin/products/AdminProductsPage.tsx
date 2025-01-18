@@ -3,7 +3,6 @@
 "use client";
 // importing the required modules
 import React, { useEffect, useState } from "react";
-import AdminHeader from "@/components/partials/header/AdminHeader";
 import { Product } from "@/types/types";
 import { adminStore } from "@/store/adminStore";
 import axiosInstance from "@/lib/axios/axiosInstance";
@@ -39,7 +38,6 @@ const AdminProductsPage = () => {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      <AdminHeader />
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-[#1a237e] mb-6">
           Product Management

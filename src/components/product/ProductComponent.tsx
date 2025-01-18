@@ -3,7 +3,6 @@
 "use client";
 // importing the required modules
 import React, { useState, useEffect } from "react";
-import Header from "../partials/header/Header";
 import Footer from "../partials/footer/Footer";
 import Image from "next/image";
 import { Product } from "@/types/types";
@@ -40,7 +39,6 @@ const ProductComponent = () => {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      <Header />
       <main className="container mx-auto px-4 py-8">
         <section className="mb-12">
           <h2 className="text-2xl font-semibold text-[#1a237e] mb-4">

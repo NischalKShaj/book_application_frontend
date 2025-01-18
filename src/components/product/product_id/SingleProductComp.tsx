@@ -3,7 +3,6 @@
 
 // importing the required modules
 import Footer from "@/components/partials/footer/Footer";
-import Header from "@/components/partials/header/Header";
 import axiosInstance from "@/lib/axios/axiosInstance";
 import { Product } from "@/types/types";
 import React, { useEffect, useState } from "react";
@@ -52,7 +51,6 @@ const SingleProductComp = ({ id }: { id: string }) => {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden p-6">
           <div className="md:flex gap-8">

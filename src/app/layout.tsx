@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import SpinnerWrapper from "@/components/partials/spinner/SpinnerWrapper";
 import { AxiosInterceptorProvider } from "./AxiosInterceptorProvider";
+import ConditionalHeader from "@/components/partials/header/ConditionalHeader";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,7 +31,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AxiosInterceptorProvider>{children}</AxiosInterceptorProvider>
+        <SpinnerWrapper>
+          <ConditionalHeader />
+          <AxiosInterceptorProvider>{children}</AxiosInterceptorProvider>
+        </SpinnerWrapper>
       </body>
     </html>
   );
