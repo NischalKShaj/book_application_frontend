@@ -34,6 +34,11 @@ const Sidebar = () => {
     router.push("/login");
   };
 
+  // for moving to the address page
+  const handleAddressPage = () => {
+    router.push("/address");
+  };
+
   return (
     <div className="w-64 h-[600px] bg-[#1a237e] m-10 text-white flex flex-col items-center py-8 shadow-lg rounded-lg">
       {/* Profile Section */}
@@ -57,7 +62,10 @@ const Sidebar = () => {
       <div className="mt-8 w-full">
         <ul className="space-y-4 px-6">
           <li>
-            <button className="w-full text-left bg-gray-200 text-[#333333] hover:bg-gray-300 px-4 py-2 rounded-lg">
+            <button
+              onClick={handleAddressPage}
+              className="w-full text-left bg-gray-200 text-[#333333] hover:bg-gray-300 px-4 py-2 rounded-lg"
+            >
               Address
             </button>
           </li>
