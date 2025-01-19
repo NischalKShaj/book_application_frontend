@@ -59,6 +59,16 @@ const Header = () => {
     router.push("/order");
   };
 
+  // for moving to the profile page
+  const handleProfilePage = () => {
+    router.push("/profile");
+  };
+
+  // for moving to the contact page
+  const handleContactPage = () => {
+    router.push("/contact");
+  };
+
   return (
     <div className="bg-[#1a237e] text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -116,15 +126,26 @@ const Header = () => {
                 className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-lg border border-gray-200 w-48"
               >
                 {/* Profile Section */}
-                <button className="block w-full rounded-t-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black">
+                <button
+                  onClick={handleProfilePage}
+                  className="block w-full rounded-t-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black"
+                >
                   Profile
                 </button>
+                <hr className="border-gray-200" />
                 {/* Orders Section */}
                 <button
                   onClick={handleOrderPage}
                   className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black"
                 >
                   Orders
+                </button>
+                <hr className="border-gray-200" />
+                <button
+                  onClick={handleContactPage}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black"
+                >
+                  Contact Us
                 </button>
                 <hr className="border-gray-200" />
                 {/* Logout Button */}
