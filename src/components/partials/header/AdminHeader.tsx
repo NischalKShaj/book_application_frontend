@@ -60,6 +60,12 @@ const AdminHeader = () => {
           >
             Users
           </Link>
+          <Link
+            href="/admin/orders"
+            className="hover:text-[#f5e6d3] text-[#f5e6d3]"
+          >
+            Orders
+          </Link>
         </nav>
 
         {admin && (
