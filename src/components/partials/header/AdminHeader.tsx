@@ -71,12 +71,20 @@ const AdminHeader = () => {
         {admin && (
           <div className="hidden md:flex space-x-3">
             {path === "/admin/product" && ( // Check the current path
-              <button
-                onClick={() => router.push("/admin/product/addProducts")}
-                className="bg-[#43a047] hover:bg-[#388e3c] text-white px-6 py-2 text-lg rounded-md"
-              >
-                Add Product
-              </button>
+              <div className="space-x-6">
+                <input type="search" placeholder="search the product here" />
+                <button
+                  onClick={() => router.push("/admin/product/addProducts")}
+                  className="bg-[#43a047] hover:bg-[#388e3c] text-white px-6 py-2 text-lg rounded-md"
+                >
+                  Add Product
+                </button>
+              </div>
+            )}
+            {path === "/admin/users" && (
+              <div className="space-x-6">
+                <input type="search" placeholder="search the product here" />
+              </div>
             )}
             <button
               onClick={logout}

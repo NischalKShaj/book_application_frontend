@@ -72,12 +72,16 @@ export interface CartItem {
   id: number;
   title: string;
   price: number;
+  images: string[];
+  description: string;
   quantity: number;
 }
 
 // interface for the address
 export interface Address {
-  id: number;
+  _id: number;
+  addresseeName: string;
+  addresseePhone: string;
   fullAddress: string;
   locality: string;
   pincode: string;

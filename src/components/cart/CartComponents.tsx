@@ -14,42 +14,43 @@ const CartComponents = () => {
   const router = useRouter();
   const isAuthorized = userStore((state) => state.isAuthorized);
   const user = userStore((state) => state.user);
-
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      title: "Book Title 1",
-      price: 1000,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      title: "Book Title 2",
-      price: 2000,
-      quantity: 2,
-    },
-  ]);
-
-  useEffect(() => {
-    if (!isAuthorized) {
-      router.push("/login");
-    } else {
-      const id = user?._id;
-      loadCart(id);
-    }
-  }, [isAuthorized, router, user?._id]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   // function for loading the cart contents of the user
   const loadCart = async (id: string | undefined) => {
     try {
       const response = await axiosInstance.get(`cart/${id}`);
       if (response.status === 200) {
-        console.log("response", response.data);
+        console.log("response", response.data.cart);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const transformedCart = response.data.cart.map((item: any) => ({
+          id: item._id,
+          title: item.bookName,
+          price: item.amount,
+          description: item.bookDescription,
+          quantity: item.quantity,
+          images: item.images,
+        }));
+        setCartItems(transformedCart);
       }
     } catch (error) {
       console.error("error", error);
     }
   };
+
+  useEffect(() => {
+    if (!isAuthorized) {
+      router.push("/login");
+    } else {
+      const id = user?._id;
+      loadCart(id).finally(() => setIsLoading(false));
+    }
+  }, [isAuthorized, router, user?._id]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const handleQuantityChange = (id: number, change: number) => {
     setCartItems((items) =>
@@ -101,19 +102,20 @@ const CartComponents = () => {
                   className="flex items-center border-b border-gray-200 p-4"
                 >
                   <Image
-                    src="/placeholder.svg"
+                    src={item.images[0]}
                     alt={item.title}
-                    width={80}
-                    height={120}
+                    width={300}
+                    height={390}
                     className="rounded-md mr-4"
                   />
                   <div className="flex-grow">
                     <h3 className="font-medium text-[#333333] mb-1">
                       {item.title}
                     </h3>
-                    <p className="text-[#d84315] font-bold">
-                      ₹{item.price.toFixed(2)}
-                    </p>
+                    <h3 className="font-medium text-[#333333] mb-1">
+                      {item.description}
+                    </h3>
+                    <p className="text-[#d84315] font-bold">₹{item.price}</p>
                   </div>
                   <div className="flex items-center">
                     <button

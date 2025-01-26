@@ -1,19 +1,29 @@
-// <==================== component for adding a address from checkout page =======>
-
-// importing the required modules
 // <==================== component for adding an address from checkout page =======>
+"use client";
 
 // importing the required modules
+import axiosInstance from "@/lib/axios/axiosInstance";
+import { userStore } from "@/store/userStore";
 import React, { useState } from "react";
 
-const AddressModal = ({ onClose }: { onClose: () => void }) => {
+const AddressModal = ({
+  onClose,
+  onAddressAdded,
+}: {
+  onClose: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onAddressAdded: (newAddress: any) => void;
+}) => {
   const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
     fullAddress: "",
     locality: "",
     state: "",
     city: "",
     pincode: "",
   });
+  const user = userStore((state) => state.user);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -23,10 +33,29 @@ const AddressModal = ({ onClose }: { onClose: () => void }) => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Address submitted:", formData);
-    onClose(); // Close modal after submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    try {
+      e.preventDefault();
+      console.log("Address submitted:", formData);
+      const response = await axiosInstance.post(`/add-address`, {
+        userId: user?._id,
+        addresseeName: formData.name,
+        addresseePhone: formData.phone,
+        fullAddress: formData.fullAddress,
+        city: formData.city,
+        locality: formData.locality,
+        state: formData.state,
+        pincode: formData.pincode,
+      });
+      if (response.status === 201) {
+        console.log("response", response.data);
+        onAddressAdded(response);
+      }
+      onClose(); // Close modal after submission
+    } catch (error) {
+      console.error("error", error);
+      onClose();
+    }
   };
 
   return (
@@ -34,6 +63,23 @@ const AddressModal = ({ onClose }: { onClose: () => void }) => {
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-xl">
         <h2 className="text-3xl font-bold text-gray-800 mb-6">Add Address</h2>
         <form onSubmit={handleSubmit}>
+          <div className="mb-5">
+            <label
+              htmlFor="name"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              Receiver Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="mt-1 block w-full border border-gray-400 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg p-3"
+              required
+            />
+          </div>
           <div className="mb-5">
             <label
               htmlFor="fullAddress"
@@ -114,6 +160,23 @@ const AddressModal = ({ onClose }: { onClose: () => void }) => {
               id="pincode"
               name="pincode"
               value={formData.pincode}
+              onChange={handleChange}
+              className="mt-1 block w-full border border-gray-400 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg p-3"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="phone"
+              className="block text-lg font-medium text-gray-700 mb-2"
+            >
+              Phone Number
+            </label>
+            <input
+              type="text"
+              id="phone"
+              name="phone"
+              value={formData.phone}
               onChange={handleChange}
               className="mt-1 block w-full border border-gray-400 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg p-3"
               required

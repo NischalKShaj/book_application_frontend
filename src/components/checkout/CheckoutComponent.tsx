@@ -18,40 +18,10 @@ const CheckoutComponent = () => {
   const user = userStore((state) => state.user);
 
   const [openModal, setOpenModal] = useState(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      title: "Book Title 1",
-      price: 1000,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      title: "Book Title 2",
-      price: 2000,
-      quantity: 2,
-    },
-  ]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<number | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>("");
-  const [addresses, setAddresses] = useState<Address[]>([
-    {
-      id: 1,
-      fullAddress: "123 Main St",
-      city: "Mumbai",
-      state: "Maharashtra",
-      pincode: "400001",
-      locality: "test",
-    },
-    {
-      id: 2,
-      fullAddress: "456 Park Ave",
-      city: "Delhi",
-      state: "Delhi",
-      pincode: "110001",
-      locality: "test",
-    },
-  ]);
+  const [addresses, setAddresses] = useState<Address[]>([]);
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -69,12 +39,20 @@ const CheckoutComponent = () => {
       const response = await axiosInstance.get(`cart/${id}`);
       if (response.status === 200) {
         console.log("response", response.data);
-        // const data = Array.isArray(response.data) ? response.data : [];
-        // setCartItems(data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const transformedCart = response.data.cart.map((item: any) => ({
+          id: item._id,
+          title: item.bookName,
+          price: item.amount,
+          description: item.bookDescription,
+          quantity: item.quantity,
+          images: item.images,
+        }));
+        setCartItems(transformedCart);
       }
     } catch (error) {
       console.error("error", error);
-      // setCartItems([]);
+      setCartItems([]);
     }
   };
 
@@ -84,8 +62,20 @@ const CheckoutComponent = () => {
       const response = await axiosInstance.get(`/address/${id}`);
       if (response.status === 200) {
         console.log("response", response.data);
-        // const data = Array.isArray(response.data) ? response.data : [];
-        // setAddresses(data);
+        const transformedAddress = response.data.addresses.map(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (address: any) => ({
+            _id: address._id, // Ensure the ID is mapped correctly
+            addresseeName: address.addresseeName,
+            addresseePhone: address.addresseePhone,
+            fullAddress: address.fullAddress,
+            locality: address.locality,
+            state: address.state,
+            city: address.city,
+            pincode: address.pincode,
+          })
+        );
+        setAddresses(transformedAddress);
       }
     } catch (error) {
       console.error("error", error);
@@ -144,6 +134,13 @@ const CheckoutComponent = () => {
     setOpenModal(true);
   };
 
+  // showing the added address
+  const handleAddressAdded = () => {
+    const id = user?._id;
+    loadAddress(id);
+    setOpenModal(false);
+  };
+
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <main className="container mx-auto px-4 py-8">
@@ -156,18 +153,23 @@ const CheckoutComponent = () => {
             </h2>
             <div className="bg-white rounded-lg shadow p-6">
               {addresses.map((address) => (
-                <div key={address.id} className="mb-4">
+                <div key={address._id} className="mb-4">
                   <label className="flex items-center">
                     <input
                       type="radio"
                       name="address"
-                      value={address.id}
-                      checked={selectedAddress === address.id}
-                      onChange={() => setSelectedAddress(address.id)}
+                      value={address._id}
+                      checked={selectedAddress === address._id}
+                      onChange={() => setSelectedAddress(address._id)}
                       className="mr-2"
                     />
                     <span>
-                      {address.fullAddress}, {address.city}, {address.state}{" "}
+                      {address.addresseeName}
+                      <br />
+                      {address.fullAddress}, {address.city}, {address.state}
+                      <br />
+                      {address.addresseePhone}
+                      <br />
                       {address.pincode}
                     </span>
                   </label>
@@ -181,7 +183,10 @@ const CheckoutComponent = () => {
               </button>
               {openModal && (
                 <div>
-                  <AddressModal onClose={() => setOpenModal(false)} />
+                  <AddressModal
+                    onClose={() => setOpenModal(false)}
+                    onAddressAdded={handleAddressAdded}
+                  />
                 </div>
               )}
             </div>
@@ -231,15 +236,18 @@ const CheckoutComponent = () => {
                   className="flex items-center border-b border-gray-200 p-4"
                 >
                   <Image
-                    src="/placeholder.svg"
+                    src={item.images[0]}
                     alt={item.title}
-                    width={60}
-                    height={90}
+                    width={300}
+                    height={390}
                     className="rounded-md mr-4"
                   />
                   <div className="flex-grow">
                     <h3 className="font-medium text-[#333333] mb-1">
                       {item.title}
+                    </h3>
+                    <h3 className="font-medium text-[#333333] mb-1">
+                      {item.description}
                     </h3>
                     <p className="text-sm text-gray-600">
                       Quantity: {item.quantity}

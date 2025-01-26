@@ -2,12 +2,15 @@
 
 // importing the required modules
 import CheckoutComponent from "@/components/checkout/CheckoutComponent";
+import SpinnerWrapper from "@/components/partials/spinner/SpinnerWrapper";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <CheckoutComponent />
+      <SpinnerWrapper>
+        <CheckoutComponent />
+      </SpinnerWrapper>
     </div>
   );
 };

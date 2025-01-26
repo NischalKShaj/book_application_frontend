@@ -7,10 +7,12 @@ import { Product } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { userStore } from "@/store/userStore";
 
 const SingleProductComp = ({ id }: { id: string }) => {
   const [product, setProduct] = useState<Product | null>(null);
   const [mainImage, setMainImage] = useState("");
+  const user = userStore((state) => state.user);
   const router = useRouter();
 
   useEffect(() => {
@@ -38,10 +40,15 @@ const SingleProductComp = ({ id }: { id: string }) => {
   // function for adding to the cart
   const addToCart = async () => {
     try {
-      const response = await axiosInstance.post("/product/add-cart", product);
+      const response = await axiosInstance.post("/cart/add-item", {
+        productId: product._id,
+        userId: user?._id,
+        quantity: 1,
+      });
       if (response.status === 201) {
         console.log("product added to cart");
-        router.push("/product/cart");
+        console.log("response", response);
+        router.push("/cart");
       }
     } catch (error) {
       console.error("error", error);

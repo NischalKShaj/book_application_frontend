@@ -43,7 +43,7 @@ const ProductComponent = () => {
           <h2 className="text-2xl font-semibold text-[#1a237e] mb-4">
             Bestsellers
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-4 md:grid-cols-4 gap-6 cursor-pointer">
             {products.map((book) => (
               <div
                 onClick={() => singleProduct(book._id)}
@@ -68,9 +68,9 @@ const ProductComponent = () => {
                   {/* Button or Cart Icon */}
                   <div className="flex items-center justify-between">
                     {/* Show button on larger screens, cart icon on smaller screens */}
-                    <button className="hidden sm:block w-full bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-md">
+                    {/* <button className="hidden sm:block w-full bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-md">
                       Add to Cart
-                    </button>
+                    </button> */}
 
                     <div className="sm:hidden">
                       <ShoppingCart

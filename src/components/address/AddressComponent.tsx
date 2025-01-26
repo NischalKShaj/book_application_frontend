@@ -2,46 +2,59 @@
 "use client";
 
 // importing the required modules
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import AddressModal from "../modal/AddressModal";
+import axiosInstance from "@/lib/axios/axiosInstance";
+import { userStore } from "@/store/userStore";
+import { Address } from "@/types/types";
 
 const AddressComponent = () => {
   const [openModal, setOpenModal] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const user = userStore((state) => state.user);
 
-  const addresses = [
-    {
-      id: 1,
-      name: "Nischal K Shaj",
-      address: "21/1 Shree Nilayam, 3rd Main Road, K R Garden",
-      city: "BENGALURU",
-      state: "KARNATAKA",
-      pincode: "560017",
-      phone: "9544291856",
-    },
-    {
-      id: 2,
-      name: "Nischal.K.Shaj",
-      address: "Scita Solutions, 1st Main, 3rd Cross, Isro Layout",
-      city: "BENGALURU",
-      state: "KARNATAKA",
-      pincode: "560078",
-      phone: "9544291856",
-    },
-    {
-      id: 3,
-      name: "Deepambika S",
-      address: "Pathanamthitta Head Post Office",
-      city: "PATHANAMTHITTA",
-      state: "KERALA",
-      pincode: "689645",
-      phone: "7403291856",
-    },
-  ];
+  useEffect(() => {
+    savedAddress(user?._id);
+  }, [user?._id]);
+
+  const savedAddress = async (id: string | undefined) => {
+    try {
+      const response = await axiosInstance.get(`address/${id}`);
+      if (response.status === 200) {
+        console.log("res", response.data.addresses);
+        const transformedAddress = response.data.addresses.map(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (address: any) => ({
+            _id: address._id, // Ensure the ID is mapped correctly
+            addresseeName: address.addresseeName,
+            addresseePhone: address.addresseePhone,
+            fullAddress: address.fullAddress,
+            locality: address.locality,
+            state: address.state,
+            city: address.city,
+            pincode: address.pincode,
+          })
+        );
+        console.log("transformed", transformedAddress);
+        setAddresses(transformedAddress);
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
 
   // function for opening the modal for adding the new address
   const handleAddAddress = () => {
     setOpenModal(true);
+  };
+
+  // showing the added address
+  const handleAddressAdded = () => {
+    const id = user?._id;
+    savedAddress(id);
+    setOpenModal(false);
   };
 
   return (
@@ -62,18 +75,22 @@ const AddressComponent = () => {
         {/* Address Cards */}
         {addresses.map((address) => (
           <div
-            key={address.id}
+            key={address._id}
             className="flex flex-col w-56 h-56 border border-gray-300 rounded-lg shadow p-4 relative"
           >
-            <h3 className="font-semibold text-gray-900">{address.name}</h3>
+            <h3 className="font-semibold text-gray-900">
+              {address.addresseeName}
+            </h3>
             <p className="text-gray-700 text-sm mt-2 flex-1">
-              {address.address}
+              {address.fullAddress}
               <br />
               {address.city}, {address.state} {address.pincode}
               <br />
               India
             </p>
-            <p className="text-gray-700 text-sm mt-2">Phone: {address.phone}</p>
+            <p className="text-gray-700 text-sm mt-2">
+              Phone: {address.addresseePhone}
+            </p>
             <div className="flex items-center justify-start space-x-4 mt-auto text-sm">
               <button className="text-blue-500 hover:underline flex items-center space-x-1">
                 <FiEdit className="inline" />
@@ -88,7 +105,10 @@ const AddressComponent = () => {
         ))}
         {openModal && (
           <div>
-            <AddressModal onClose={() => setOpenModal(false)} />
+            <AddressModal
+              onClose={() => setOpenModal(false)}
+              onAddressAdded={handleAddressAdded}
+            />
           </div>
         )}
       </div>
