@@ -11,14 +11,15 @@ import { Address } from "@/types/types";
 
 const AddressComponent = () => {
   const [openModal, setOpenModal] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const user = userStore((state) => state.user);
 
   useEffect(() => {
     savedAddress(user?._id);
   }, [user?._id]);
 
+  // for showing the saved address
   const savedAddress = async (id: string | undefined) => {
     try {
       const response = await axiosInstance.get(`address/${id}`);
@@ -47,6 +48,7 @@ const AddressComponent = () => {
 
   // function for opening the modal for adding the new address
   const handleAddAddress = () => {
+    setSelectedAddress(null);
     setOpenModal(true);
   };
 
@@ -55,6 +57,30 @@ const AddressComponent = () => {
     const id = user?._id;
     savedAddress(id);
     setOpenModal(false);
+  };
+
+  // for opening the edit modal
+  const handleEditAddress = (address: Address) => {
+    setSelectedAddress(address);
+    setOpenModal(true);
+  };
+
+  // for removing a particular address
+  const removeAddress = async (addressId: number) => {
+    try {
+      console.log("addressid", addressId);
+      const response = await axiosInstance.delete(
+        `/remove-address/${addressId}`
+      );
+      if (response.status === 200) {
+        console.log(response);
+        setAddresses((prevAddress) =>
+          prevAddress.filter((address) => address._id !== addressId)
+        );
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   return (
@@ -92,11 +118,21 @@ const AddressComponent = () => {
               Phone: {address.addresseePhone}
             </p>
             <div className="flex items-center justify-start space-x-4 mt-auto text-sm">
-              <button className="text-blue-500 hover:underline flex items-center space-x-1">
+              <button
+                onClick={() => {
+                  handleEditAddress(address);
+                }}
+                className="text-blue-500 hover:underline flex items-center space-x-1"
+              >
                 <FiEdit className="inline" />
                 <span>Edit</span>
               </button>
-              <button className="text-red-500 hover:underline flex items-center space-x-1">
+              <button
+                onClick={() => {
+                  removeAddress(address._id);
+                }}
+                className="text-red-500 hover:underline flex items-center space-x-1"
+              >
                 <FiTrash2 className="inline" />
                 <span>Remove</span>
               </button>
@@ -108,6 +144,7 @@ const AddressComponent = () => {
             <AddressModal
               onClose={() => setOpenModal(false)}
               onAddressAdded={handleAddressAdded}
+              address={selectedAddress}
             />
           </div>
         )}

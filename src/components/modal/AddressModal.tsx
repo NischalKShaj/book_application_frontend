@@ -4,15 +4,18 @@
 // importing the required modules
 import axiosInstance from "@/lib/axios/axiosInstance";
 import { userStore } from "@/store/userStore";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Address } from "@/types/types";
 
 const AddressModal = ({
   onClose,
   onAddressAdded,
+  address,
 }: {
   onClose: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onAddressAdded: (newAddress: any) => void;
+  address: Address | null;
 }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -24,6 +27,21 @@ const AddressModal = ({
     pincode: "",
   });
   const user = userStore((state) => state.user);
+  const id = user?._id;
+
+  useEffect(() => {
+    if (address) {
+      setFormData({
+        name: address.addresseeName,
+        phone: address.addresseePhone,
+        fullAddress: address.fullAddress,
+        locality: address.locality,
+        state: address.state,
+        city: address.city,
+        pincode: address.pincode,
+      });
+    }
+  }, [address]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -36,8 +54,15 @@ const AddressModal = ({
   const handleSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
+
       console.log("Address submitted:", formData);
-      const response = await axiosInstance.post(`/add-address`, {
+
+      const apiUrl = address
+        ? `/update-address/${id}/${address._id}`
+        : `/add-address`; // Dynamic API endpoint
+      const method = address ? "put" : "post";
+
+      const response = await axiosInstance[method](apiUrl, {
         userId: user?._id,
         addresseeName: formData.name,
         addresseePhone: formData.phone,
@@ -47,7 +72,7 @@ const AddressModal = ({
         state: formData.state,
         pincode: formData.pincode,
       });
-      if (response.status === 201) {
+      if (response.status === 201 || response.status === 200) {
         console.log("response", response.data);
         onAddressAdded(response);
       }
@@ -194,7 +219,7 @@ const AddressModal = ({
               type="submit"
               className="px-6 py-3 bg-[#d84315] hover:bg-[#bf360c] rounded-lg text-white"
             >
-              Save Address
+              {address ? "Update Address" : "Save Address"}
             </button>
           </div>
         </form>
