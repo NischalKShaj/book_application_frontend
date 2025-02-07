@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // <============== component for showing the order history ============>
 "use client";
@@ -10,23 +11,27 @@ import Image from "next/image";
 import axiosInstance from "@/lib/axios/axiosInstance";
 import { OrderItem } from "@/types/types";
 
+type Order = {
+  id: string;
+  date: string;
+  status: string;
+  total: number;
+  items: {
+    id: string;
+    title: string;
+    image: string;
+    price: number;
+    quantity: number;
+    images: string[];
+  }[];
+};
+
 const OrderHistory = () => {
   const router = useRouter();
   const isAuthorized = userStore((state) => state.isAuthorized);
   const user = userStore((state) => state.user);
   const [isAnimating, setIsAnimating] = useState(true);
-  const [orders, setOrders] = useState<OrderItem[]>([
-    {
-      id: 1,
-      date: "2025-01-17T10:30:00Z",
-      total: 3000,
-      status: "returned", // New status field
-      items: [
-        { id: 101, title: "Book Title 1", price: 1000, quantity: 1 },
-        { id: 102, title: "Book Title 2", price: 2000, quantity: 1 },
-      ],
-    },
-  ]);
+  const [orders, setOrders] = useState<OrderItem[]>([]);
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -45,12 +50,31 @@ const OrderHistory = () => {
     return () => clearTimeout(timeoutId);
   }, []);
 
+  // function for transforming the data according to the response
+  const transformOrders = (apiOrders: any) => {
+    return apiOrders.map((order: any) => ({
+      id: order._id,
+      date: order.createdAt,
+      status: order.status,
+      total: order.totalAmount,
+      items: order.products.map((product: any) => ({
+        id: product.productId,
+        title: product.bookName,
+        image: product.images,
+        price: product.amount,
+        quantity: product.quantity,
+        images: product.images,
+      })),
+    }));
+  };
+
+  // for fetching the order history for the user
   const fetchOrderHistory = async (id: string | undefined) => {
     try {
       const response = await axiosInstance.get(`orders/${id}`);
-      if (response.status === 200) {
-        // setOrders(response.data.orders);
-        console.log("response", response.data);
+      if (response.status === 202) {
+        setOrders(transformOrders(response.data.data));
+        console.log("response", response.data.data);
       }
     } catch (error) {
       console.error("Error fetching order history:", error);
@@ -61,16 +85,19 @@ const OrderHistory = () => {
     router.push("/product");
   };
 
+  // function for cancelling the order
   const handleCancelOrder = (orderId: number) => {
     // Logic for canceling the order
     console.log(`Order ${orderId} has been canceled`);
   };
 
+  // function for returning the order
   const handleReturnOrder = (orderId: number) => {
     // Logic for returning the order
     console.log(`Order ${orderId} has been returned`);
   };
 
+  // function for downloading the invoice for the orders
   const handleDownloadInvoice = (orderId: number) => {
     // Logic for downloading the invoice
     console.log(`Downloading invoice for Order ${orderId}`);
@@ -140,7 +167,7 @@ const OrderHistory = () => {
               >
                 <div className="mb-4 flex justify-between items-center">
                   <h3 className="text-lg font-medium text-[#333333]">
-                    Order ID: {order.id}
+                    Order ID: #{order.id}
                   </h3>
                   <p className="text-gray-500">
                     {new Date(order.date).toLocaleDateString()}
@@ -155,7 +182,7 @@ const OrderHistory = () => {
                       className="flex items-center border-b border-gray-200 pb-4 mb-4"
                     >
                       <Image
-                        src="/placeholder.svg"
+                        src={item.image[0]}
                         alt={item.title}
                         width={80}
                         height={120}
@@ -203,8 +230,18 @@ const OrderHistory = () => {
                       ></div>
                     </div>
                   </div>
-                  <div className="mt-2 text-sm text-gray-500 animate-pulse">
-                    <p>Status is in progress...</p>
+                  <div className="mt-2 text-sm text-gray-500">
+                    <p>
+                      {order.status === "pending"
+                        ? "Your order has been placed successfully."
+                        : order.status === "shipped"
+                        ? "Your order is on the way."
+                        : order.status === "delivered"
+                        ? "Your order has been delivered."
+                        : order.status === "canceled"
+                        ? "This order has been canceled."
+                        : "Processing your order..."}
+                    </p>
                   </div>
                 </div>
 

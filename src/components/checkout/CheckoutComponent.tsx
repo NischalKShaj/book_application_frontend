@@ -20,6 +20,7 @@ const CheckoutComponent = () => {
   const [openModal, setOpenModal] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<number | null>(null);
+  const [address, setAddress] = useState<Address | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [addresses, setAddresses] = useState<Address[]>([]);
 
@@ -110,13 +111,13 @@ const CheckoutComponent = () => {
         orderData
       );
       if (response.status === 201) {
-        router.push("/order-confirmation");
         SweetAlert.fire({
           title: "Order Placed Successfully!",
           text: "Thank you for your order. We'll notify you once your order is on its way. If you have any questions, feel free to contact us.",
           icon: "success",
           confirmButtonText: "OK",
         });
+        router.push("/cart");
       }
     } catch (error) {
       console.error("Error placing order:", error);
@@ -186,6 +187,7 @@ const CheckoutComponent = () => {
                   <AddressModal
                     onClose={() => setOpenModal(false)}
                     onAddressAdded={handleAddressAdded}
+                    address={address}
                   />
                 </div>
               )}
@@ -214,9 +216,9 @@ const CheckoutComponent = () => {
                   <input
                     type="radio"
                     name="payment"
-                    value="cash_on_delivery"
-                    checked={paymentMethod === "cash_on_delivery"}
-                    onChange={() => setPaymentMethod("cash_on_delivery")}
+                    value="COD"
+                    checked={paymentMethod === "COD"}
+                    onChange={() => setPaymentMethod("COD")}
                     className="mr-2"
                   />
                   <span>Cash on Delivery</span>
