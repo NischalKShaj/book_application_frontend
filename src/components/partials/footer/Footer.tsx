@@ -2,6 +2,7 @@
 
 // importing the required modules
 import React from "react";
+import Link from "next/link";
 
 const Footer = () => {
   return (
@@ -35,6 +36,11 @@ const Footer = () => {
                 <a href="#" className="hover:text-[#f5e6d3]">
                   Instagram
                 </a>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-[#f5e6d3]">
+                  Contact Us
+                </Link>
               </li>
             </ul>
           </div>

@@ -2,12 +2,52 @@
 "use client";
 
 // importing the required modules
-import React from "react";
+import React, { ChangeEventHandler, useState } from "react";
 import Sidebar from "../partials/sidebar/Sidebar";
+import axiosInstance from "@/lib/axios/axiosInstance";
+import SweetAlert from "sweetalert2";
 
 const ContactComponent = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    first_name: "",
+    last_name: "",
+    phone: "",
+    message: "",
+  });
+
+  // function for changing the values in the form
+  const changeValues: ChangeEventHandler<
+    HTMLInputElement | HTMLTextAreaElement
+  > = (e) => {
+    const target = e.currentTarget;
+    const { id, value } = target;
+    setFormData((prevData) => ({ ...prevData, [id]: value }));
+  };
+
   // for submitting the form data
-  const handleSubmit = async () => {};
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await axiosInstance.post("/contact", formData);
+      if (response.status === 200) {
+        SweetAlert.fire({
+          title: "Email Sent Successfully!",
+          text: "Your email has been sent. We will contact you soon.",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      }
+    } catch (error) {
+      console.error("error", error);
+      SweetAlert.fire({
+        title: "Email Sending Failed!",
+        text: "We encountered an issue while sending your email. Please try again later or check your internet connection.",
+        icon: "error",
+        confirmButtonText: "Retry",
+      });
+    }
+  };
 
   return (
     <div className=" bg-[#fafafa]">
@@ -27,7 +67,8 @@ const ContactComponent = () => {
                 name="email"
                 id="email"
                 className="block w-full px-4 py-2 text-sm text-gray-900 border-b-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder=" "
+                placeholder="Please enter your email"
+                onChange={changeValues}
                 required
               />
               <label
@@ -46,7 +87,8 @@ const ContactComponent = () => {
                   name="first_name"
                   id="first_name"
                   className="block w-full px-4 py-2 text-sm text-gray-900 border-b-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder=" "
+                  placeholder="Enter your first name"
+                  onChange={changeValues}
                   required
                 />
                 <label
@@ -63,7 +105,8 @@ const ContactComponent = () => {
                   name="last_name"
                   id="last_name"
                   className="block w-full px-4 py-2 text-sm text-gray-900 border-b-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder=" "
+                  placeholder="Enter your last name"
+                  onChange={changeValues}
                   required
                 />
                 <label
@@ -81,9 +124,9 @@ const ContactComponent = () => {
                 type="tel"
                 name="phone"
                 id="phone"
-                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                 className="block w-full px-4 py-2 text-sm text-gray-900 border-b-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder=" "
+                placeholder="Enter your phone number"
+                onChange={changeValues}
                 required
               />
               <label
@@ -101,7 +144,8 @@ const ContactComponent = () => {
                 id="message"
                 className="block w-full px-4 py-2 text-sm text-gray-900 border-b-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder=" "
-                rows={4}
+                rows={8}
+                onChange={changeValues}
                 required
               ></textarea>
               <label
