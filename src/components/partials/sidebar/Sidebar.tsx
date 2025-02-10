@@ -2,15 +2,17 @@
 "use client";
 
 // importing the required modules
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { userStore } from "@/store/userStore";
 import { useRouter } from "next/navigation";
+import ProfileEditModal from "@/components/modal/ProfileEditModal";
 
 const Sidebar = () => {
   const user = userStore((state) => state.user);
   const logout = userStore((state) => state.isLoggedOut);
   const router = useRouter();
+  const [openModal, setOpenModal] = useState(false);
 
   // for the wishlist
   const handleWishlist = () => {
@@ -33,6 +35,11 @@ const Sidebar = () => {
     router.push("/address");
   };
 
+  // for editing the address
+  const handleEditProfile = () => {
+    setOpenModal(true);
+  };
+
   return (
     <div className="w-64 h-[600px] bg-[#1a237e] m-10 text-white flex flex-col items-center py-8 shadow-lg rounded-lg">
       {/* Profile Section */}
@@ -48,7 +55,10 @@ const Sidebar = () => {
       <p className="text-gray-300 text-sm">{user?.phoneNumber}</p>
 
       {/* Edit Profile Button */}
-      <button className="mt-6 bg-[#d84315] hover:bg-[#bf360c] text-white px-4 py-2 text-sm font-semibold rounded-full">
+      <button
+        onClick={handleEditProfile}
+        className="mt-6 bg-[#d84315] hover:bg-[#bf360c] text-white px-4 py-2 text-sm font-semibold rounded-full"
+      >
         Edit Profile
       </button>
 
@@ -94,6 +104,11 @@ const Sidebar = () => {
       >
         Logout
       </button>
+      {openModal && (
+        <div>
+          <ProfileEditModal onClose={() => setOpenModal(false)} />
+        </div>
+      )}
     </div>
   );
 };
