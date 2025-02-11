@@ -9,6 +9,7 @@ import Image from "next/image";
 import { CartItem } from "@/types/types";
 import { Trash2 } from "lucide-react";
 import axiosInstance from "@/lib/axios/axiosInstance";
+import Swal from "sweetalert2";
 
 const CartComponents = () => {
   const router = useRouter();
@@ -20,7 +21,7 @@ const CartComponents = () => {
   // function for loading the cart contents of the user
   const loadCart = async (id: string | undefined) => {
     try {
-      const response = await axiosInstance.get(`cart/${id}`);
+      const response = await axiosInstance.get(`/cart/${id}`);
       if (response.status === 200) {
         console.log("response", response.data.cart);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -79,6 +80,36 @@ const CartComponents = () => {
     router.push("/checkout");
   };
 
+  // function for clearing the particular product from the cart
+  const clearItem = async (id: number) => {
+    try {
+      const cartId = id.toString();
+      const userId = user?._id;
+      console.log("userid", userId);
+      const response = await axiosInstance.delete(
+        `/remove-item/${cartId}/${userId}`
+      );
+      if (response.status === 202) {
+        console.log("item removed", response.data);
+        setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+        Swal.fire({
+          title: "Item removed successfully!",
+          text: "The item is removed from your cart. Enjoy shopping with us.",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      }
+    } catch (error) {
+      console.error("error", error);
+      Swal.fire({
+        title: "Item removal failed!",
+        text: "Failed to remove the item from the cart.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <main className="container mx-auto px-4 py-8">
@@ -133,7 +164,10 @@ const CartComponents = () => {
                     >
                       +
                     </button>
-                    <button className="flex items-center text-red-600 hover:text-red-800 ml-4">
+                    <button
+                      onClick={() => clearItem(item.id)}
+                      className="flex items-center text-red-600 hover:text-red-800 ml-4"
+                    >
                       <Trash2 size={18} className="mr-1" />
                     </button>
                   </div>
