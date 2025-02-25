@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // <====================== component for checkout page ============>
 "use client";
@@ -11,6 +12,7 @@ import Image from "next/image";
 import SweetAlert from "sweetalert2";
 import { Address, CartItem } from "@/types/types";
 import AddressModal from "../modal/AddressModal";
+import { loadScript } from "@/utils/razorpay";
 
 const CheckoutComponent = () => {
   const router = useRouter();
@@ -105,19 +107,89 @@ const CheckoutComponent = () => {
         items: cartItems,
         totalAmount: parseFloat(getTotalPrice()),
       };
+      const onlinePaymentData = {
+        userId: user?._id,
+        amount: parseFloat(getTotalPrice()),
+        username: user?.username,
+        email: user?.email,
+        phone: user?.phoneNumber,
+      };
+      let response;
+      switch (paymentMethod) {
+        case "COD":
+          const scriptLoaded = await loadScript(
+            "https://checkout.razorpay.com/v1/checkout.js"
+          );
 
-      const response = await axiosInstance.post(
-        "/cart/confirm-order",
-        orderData
-      );
-      if (response.status === 201) {
-        SweetAlert.fire({
-          title: "Order Placed Successfully!",
-          text: "Thank you for your order. We'll notify you once your order is on its way. If you have any questions, feel free to contact us.",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-        router.push("/cart");
+          if (!scriptLoaded) {
+            throw new Error("Failed to load Razorpay script");
+          }
+          response = await axiosInstance.post("/cart/confirm-order", orderData);
+          if (response.status === 201) {
+            SweetAlert.fire({
+              title: "Order Placed Successfully!",
+              text: "Thank you for your order. We'll notify you once your order is on its way. If you have any questions, feel free to contact us.",
+              icon: "success",
+              confirmButtonText: "OK",
+            });
+            router.push("/cart");
+          }
+          break;
+        case "Online Payment":
+          response = await axiosInstance.post("/online-payment", {
+            amount: parseFloat(getTotalPrice()),
+            userId: user?._id,
+            username: user?.username,
+            email: user?.email,
+            phone: user?.phoneNumber,
+          });
+
+          const options = {
+            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+            amount: response.data.amount,
+            currency: response.data.currency,
+            name: "testname",
+            description: "Test Transaction",
+            order_id: response.data.id,
+
+            handler: async function (response: any) {
+              try {
+                const verification = await axiosInstance.post(
+                  `/api/payment-success`,
+                  { orderData, response }
+                );
+                if (verification.data.success) {
+                  SweetAlert.fire({
+                    title: "Payment Success!",
+                    text: "Thank you for subscribing! Get ready to dive into the course and unlock your potential!",
+                    icon: "success",
+                    confirmButtonText: "OK",
+                  });
+                  router.push("/cart");
+                } else {
+                  SweetAlert.fire({
+                    title: "Payment Failed!",
+                    text: "Your payment has been rejected!",
+                    icon: "warning",
+                    confirmButtonText: "OK",
+                  });
+                }
+              } catch (error) {
+                SweetAlert.fire({
+                  title: "Payment Failed!",
+                  text: "Your payment has been rejected!",
+                  icon: "warning",
+                  confirmButtonText: "OK",
+                });
+              }
+            },
+
+            theme: {
+              color: "#1a202c",
+            },
+          };
+          const razor = new (window as any).Razorpay(options);
+          razor.open();
       }
     } catch (error) {
       console.error("Error placing order:", error);
@@ -203,12 +275,12 @@ const CheckoutComponent = () => {
                   <input
                     type="radio"
                     name="payment"
-                    value="upi"
-                    checked={paymentMethod === "upi"}
-                    onChange={() => setPaymentMethod("upi")}
+                    value="Online Payment"
+                    checked={paymentMethod === "Online Payment"}
+                    onChange={() => setPaymentMethod("Online Payment")}
                     className="mr-2"
                   />
-                  <span>UPI</span>
+                  <span>Online Payment</span>
                 </label>
               </div>
               <div>
