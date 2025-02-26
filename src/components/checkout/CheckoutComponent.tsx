@@ -12,7 +12,7 @@ import Image from "next/image";
 import SweetAlert from "sweetalert2";
 import { Address, CartItem } from "@/types/types";
 import AddressModal from "../modal/AddressModal";
-import { loadScript } from "@/utils/razorpay";
+import { loadScript } from "@/lib/razorpay";
 
 const CheckoutComponent = () => {
   const router = useRouter();
@@ -117,13 +117,6 @@ const CheckoutComponent = () => {
       let response;
       switch (paymentMethod) {
         case "COD":
-          const scriptLoaded = await loadScript(
-            "https://checkout.razorpay.com/v1/checkout.js"
-          );
-
-          if (!scriptLoaded) {
-            throw new Error("Failed to load Razorpay script");
-          }
           response = await axiosInstance.post("/cart/confirm-order", orderData);
           if (response.status === 201) {
             SweetAlert.fire({
@@ -136,6 +129,13 @@ const CheckoutComponent = () => {
           }
           break;
         case "Online Payment":
+          const scriptLoaded = await loadScript(
+            "https://checkout.razorpay.com/v1/checkout.js"
+          );
+
+          if (!scriptLoaded) {
+            throw new Error("Failed to load Razorpay script");
+          }
           response = await axiosInstance.post("/online-payment", {
             amount: parseFloat(getTotalPrice()),
             userId: user?._id,
@@ -148,8 +148,8 @@ const CheckoutComponent = () => {
             key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
             amount: response.data.amount,
             currency: response.data.currency,
-            name: "testname",
-            description: "Test Transaction",
+            name: "application name",
+            description: `Payment for ${user?.username}`,
             order_id: response.data.id,
 
             handler: async function (response: any) {
@@ -161,7 +161,7 @@ const CheckoutComponent = () => {
                 if (verification.data.success) {
                   SweetAlert.fire({
                     title: "Payment Success!",
-                    text: "Thank you for subscribing! Get ready to dive into the course and unlock your potential!",
+                    text: "Thank you for your order. We'll notify you once your order is on its way. If you have any questions, feel free to contact us.",
                     icon: "success",
                     confirmButtonText: "OK",
                   });
