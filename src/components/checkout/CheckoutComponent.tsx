@@ -190,6 +190,7 @@ const CheckoutComponent = () => {
           };
           const razor = new (window as any).Razorpay(options);
           razor.open();
+          break;
       }
     } catch (error) {
       console.error("Error placing order:", error);

@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import axiosInstance from "@/lib/axios/axiosInstance";
 import { OrderItem } from "@/types/types";
+import ReturnCancel from "../modal/ReturnCancel";
 
 type Order = {
   id: string;
@@ -32,6 +33,11 @@ const OrderHistory = () => {
   const user = userStore((state) => state.user);
   const [isAnimating, setIsAnimating] = useState(true);
   const [orders, setOrders] = useState<OrderItem[]>([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<{
+    orderId: number;
+    orderStatus: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -86,13 +92,15 @@ const OrderHistory = () => {
   };
 
   // function for cancelling the order
-  const handleCancelOrder = (orderId: number) => {
+  const handleCancelOrder = (orderId: number, orderStatus: string) => {
     // Logic for canceling the order
     console.log(`Order ${orderId} has been canceled`);
+    setOpenModal(true);
+    setSelectedOrder({ orderId: orderId, orderStatus: orderStatus });
   };
 
   // function for returning the order
-  const handleReturnOrder = (orderId: number) => {
+  const handleReturnOrder = (orderId: number, orderStatus: any) => {
     // Logic for returning the order
     console.log(`Order ${orderId} has been returned`);
   };
@@ -250,7 +258,9 @@ const OrderHistory = () => {
                   {order.status !== "delivered" &&
                     order.status !== "canceled" && (
                       <button
-                        onClick={() => handleCancelOrder(order.id)}
+                        onClick={() =>
+                          handleCancelOrder(order.id, order.status)
+                        }
                         className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full"
                       >
                         Cancel Order
@@ -258,7 +268,7 @@ const OrderHistory = () => {
                     )}
                   {order.status === "delivered" && (
                     <button
-                      onClick={() => handleReturnOrder(order.id)}
+                      onClick={() => handleReturnOrder(order.id, order.status)}
                       className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full"
                     >
                       Return Order
@@ -276,6 +286,15 @@ const OrderHistory = () => {
           </div>
         )}
       </main>
+      {openModal && (
+        <div>
+          <ReturnCancel
+            onClose={() => setOpenModal(false)}
+            orderId={selectedOrder?.orderId}
+            orderStatus={selectedOrder?.orderStatus}
+          />
+        </div>
+      )}
     </div>
   );
 };
