@@ -1,10 +1,12 @@
 // component to show the orders of all the user
-
+"use client";
 // importing the required modules
 import React from "react";
 import Image from "next/image";
 
 const OrderComponent = () => {
+  // function for updating the order status
+  const handleUpdateOrderStatus = async () => {};
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
       <main className="container mx-auto px-4 py-8">
@@ -44,7 +46,7 @@ const OrderComponent = () => {
               {/* Price and Stock */}
               <div className="flex justify-between items-center">
                 <p className="text-[#d84315] font-bold">₹1,299</p>
-                <p className="text-gray-500 text-sm">Stock: 12</p>
+                <p className="text-gray-500 text-sm">Quantity: 12</p>
               </div>
 
               {/* User Details */}
@@ -63,7 +65,7 @@ const OrderComponent = () => {
               </div>
 
               {/* Status Dropdown */}
-              <div>
+              <div className="flex flex-col gap-4">
                 <label
                   htmlFor="status"
                   className="block text-sm font-medium text-gray-700 mb-1"
@@ -72,15 +74,33 @@ const OrderComponent = () => {
                 </label>
                 <select
                   id="status"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-[#1a237e] text-sm"
+                  className="w-full px-6 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-[#1a237e] text-sm"
                 >
-                  <option value="pending">Pending</option>
-                  <option value="shipped">Shipped</option>
-                  <option value="out-for-delivery">Out for Delivery</option>
-                  <option value="delivered">Delivered</option>
-                  <option value="cancelled">Cancelled</option>
-                  <option value="returned">Returned</option>
+                  <option className="w-full px-6 py-3" value="pending">
+                    Pending
+                  </option>
+                  <option className="w-full px-6 py-3" value="shipped">
+                    Shipped
+                  </option>
+                  <option className="w-full px-6 py-3" value="out-for-delivery">
+                    Out for Delivery
+                  </option>
+                  <option className="w-full px-6 py-3" value="delivered">
+                    Delivered
+                  </option>
+                  <option className="w-full px-6 py-3" value="cancelled">
+                    Cancelled
+                  </option>
+                  <option className="w-full px-6 py-3" value="returned">
+                    Returned
+                  </option>
                 </select>
+                <button
+                  onClick={handleUpdateOrderStatus}
+                  className="w-full px-6 py-3 bg-[#d84315] hover:bg-[#bf360c] rounded-lg text-white"
+                >
+                  Update
+                </button>
               </div>
             </div>
           </div>

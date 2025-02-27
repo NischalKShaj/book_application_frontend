@@ -103,6 +103,8 @@ const OrderHistory = () => {
   const handleReturnOrder = (orderId: number, orderStatus: any) => {
     // Logic for returning the order
     console.log(`Order ${orderId} has been returned`);
+    setOpenModal(true);
+    setSelectedOrder({ orderId: orderId, orderStatus: orderStatus });
   };
 
   // function for downloading the invoice for the orders

@@ -103,3 +103,10 @@ export interface OrderItem {
     quantity: number;
   }[];
 }
+
+export interface Users {
+  username: string;
+  email: string;
+  phoneNumber: string;
+  _id: string;
+}

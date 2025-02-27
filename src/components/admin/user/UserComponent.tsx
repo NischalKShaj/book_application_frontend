@@ -2,71 +2,85 @@
 "use client";
 
 // importing the required modules
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import axiosInstance from "@/lib/axios/axiosInstance";
+import { Users } from "@/types/types";
 
 const UserComponent = () => {
   const [isBlocked, setIsBlocked] = useState(false);
+  const [users, setUsers] = useState<Users[]>([]);
 
   const toggleBlockStatus = () => {
     setIsBlocked((prevStatus) => !prevStatus);
+  };
+
+  // for loading the users in the initial loading of the application
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  // for getting all the users
+  const getUsers = async () => {
+    try {
+      const response = await axiosInstance.get("/admin/get-all-users");
+      if (response.status === 200) {
+        console.log("response", response.data);
+        setUsers(response.data.users);
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#fafafa] ">
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-[#1a237e] mb-6">
-          User Management
+          👥 User Management
         </h1>
         <div className="grid grid-cols-4 gap-6">
           {/* User Card */}
-          <div className="bg-white rounded-lg shadow-md flex flex-col items-center p-6 w-80 h-[400px]">
-            {/* Profile Picture */}
-            <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden mb-4">
-              <Image
-                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJUAAACUCAMAAACtIJvYAAAAMFBMVEXk5ueutLeor7Lf4ePn6..."
-                alt="Profile"
-                width={96}
-                height={96}
-                className="w-full h-full object-cover rounded-full"
-              />
-            </div>
-
-            {/* User Details */}
-            <div className="text-center flex-1 flex flex-col justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-[#1a237e] mb-2">
-                  Nischal K Shaj
-                </h2>
-                <p className="text-gray-600 mb-1">nischalkshaj5@gmail.com</p>
-                <p className="text-[#d84315] font-bold mb-3">954429156</p>
+          {users.map((user) => (
+            <div
+              key={user._id}
+              className="bg-white rounded-lg shadow-md flex flex-col items-center p-6 w-80 h-[400px]"
+            >
+              {/* Profile Picture */}
+              <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden mb-4">
+                <Image
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJcAAACUCAMAAACp1UvlAAAAMFBMVEXk5ueutLepsLPZ3N7n6erg4uPKztC3vL++w8W7wMPHy83V2NqzubzP0tTc3+DCxskfOlAIAAADRklEQVR4nO2bwXKEIAxAEQMqCP7/3xbdrV23XSXRBKfDu7SHzvRNDBBDVKpSqVQqlUqlUqlUKpVK5V8AsP4Cu38oCUD0duqHRO+sV7dQAxVd12wYg1GF1UCFQevmDa17X1IMlH9XWunaYmYQh1+heglab8qYgf0s9aDMw+x3gvUMmSsgNh5ZLc9S2irmaCWxQTZiJstKPGKmOzZaxeQiBnv7wy8xKyUGAaGV8EJeEWWVkAkY5C3FH2S2MexTnIkCXgYbLpk1SQlXow2/F94qMXEHDFpCuFIJyx0w6Enx0oHZi5D1C9zntyc9xhQwXi1wVC/e2hW916/wrkgghislGKeWimQv1p0CqGmfvDjPSLBkr6bl9HJkLc1ZHRJ3e36vie7FeRL9x3ixet017++6T9x0X73rOXTm3L5pncP8bktNfM3cBibX0cz1PaLztYH7jfuu72lA2ynY32uJK5K9D0DLfOa3xwf4zBfp/RI6J/zZtYh1SDGpjjS27zsKNcqxLUPOymsrNmHuFSRv+xD3MAJb1wu5u6v0FWRm31D6ni+Rs1sUubDNuEcWu0p7BcL+s9RjLDQQYHbnFFyhOYXZrP2wYeim1PTEU0z5P+dgpnLTJj9qdhibp5xOP8fBlx4begBg2rAMWvWTDa25xZzVAmwobTMze8ToQ7Buxobg26hK2qV/nB7f9PeCHHvroxGfnEv/r7V9t6T5p+1L67F3kkN9oEzIf7vtbJRYnSmb7NBg6lWtO+e5o2Y8rT8xOsZRSDBupPbl0sHEdQTEgei0Bo3hHIB4XG4dB224+B0EDP1CYcuV46MAFrUCd9HTVQXQxyKLSrhE7HhMFcsVE7dgsF2SLM7mP7QMUs3pFzjSUFWe2Jm5BfJ0SQ4dOclQbRs8I1GMWYsqxq5F67uy5tY3HV6LbSVuwLahuPatd9AdH/L9J1YMVV8I5PwKRuvz5zfX4xBiFxc2+2S3989MbxDosjNM0qrJLnquLwQPyC0tpPaIb3RehtFncKhkXZuC6GJ8kHN+Z3+ydCEZpxGEAl45H2Vd9WaNIacQK5BeOSuyRHo1+vgVnPb9xlmOL3Vl6tR3DuvWVHmV4PgTttgW4UirUqlUKpWKUl/lWSnkmIvaNgAAAABJRU5ErkJggg=="
+                  alt="Profile"
+                  width={96}
+                  height={96}
+                  className="w-full h-full object-cover rounded-full"
+                />
               </div>
-              <button
-                onClick={toggleBlockStatus}
-                className={`mt-4 px-4 py-2 rounded-md text-sm font-medium ${
-                  isBlocked
-                    ? "bg-green-100 text-green-600 hover:bg-green-200"
-                    : "bg-red-100 text-red-600 hover:bg-red-200"
-                }`}
-              >
-                {isBlocked ? "Unblock" : "Block"}
-              </button>
-            </div>
-          </div>
 
-          {/* Repeat the card as needed */}
-          <div className="bg-white rounded-lg shadow-md flex flex-col items-center p-6 w-80 h-[400px]">
-            {/* Repeat similar structure */}
-          </div>
-          <div className="bg-white rounded-lg shadow-md flex flex-col items-center p-6 w-80 h-[400px]">
-            {/* Repeat similar structure */}
-          </div>
-          <div className="bg-white rounded-lg shadow-md flex flex-col items-center p-6 w-80 h-[400px]">
-            {/* Repeat similar structure */}
-          </div>
-          <div className="bg-white rounded-lg shadow-md flex flex-col items-center p-6 w-80 h-[400px]">
-            {/* Repeat similar structure */}
-          </div>
+              {/* User Details */}
+              <div className="text-center flex-1 flex flex-col justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold text-[#1a237e] mb-2">
+                    {user.username}
+                  </h2>
+                  <p className="text-gray-600 mb-1">{user.email}</p>
+                  <p className="text-[#d84315] font-bold mb-3">
+                    {user.phoneNumber}
+                  </p>
+                </div>
+                <button
+                  onClick={toggleBlockStatus}
+                  className={`mt-4 px-4 py-2 rounded-md text-sm font-medium ${
+                    isBlocked
+                      ? "bg-green-100 text-green-600 hover:bg-green-200"
+                      : "bg-red-100 text-red-600 hover:bg-red-200"
+                  }`}
+                >
+                  {isBlocked ? "Unblock" : "Block"}
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </main>
     </div>

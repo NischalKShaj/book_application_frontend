@@ -137,48 +137,53 @@ const ProfileComponent = () => {
         {/* Address Management */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">
-            🏡 Last Delivery Address
+            🏡 Last Delivery Addresses
           </h2>
-          <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            {recentAddresses.map((address, index) => (
-              <div key={index} className="px-5 pb-5">
-                <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white mb-4">
-                  Delivery Details
-                </h5>
-                <ul className="text-gray-700 dark:text-gray-300 space-y-2">
-                  <li>
-                    <span className="font-semibold">Receiver Name: </span>
-                    {address.addresseeName}
-                  </li>
-                  <li>
-                    <span className="font-semibold">Contact Number: </span>
-                    {address.addresseePhone}
-                  </li>
-                  <li>
-                    <span className="font-semibold">Full Address: </span>
-                    {address.fullAddress}
-                  </li>
-                  <li>
-                    <span className="font-semibold">Locality: </span>
-                    {address.locality}
-                  </li>
-                  <li>
-                    <span className="font-semibold">City: </span>
-                    {address.city}
-                  </li>
-                  <li>
-                    <span className="font-semibold">State: </span>
-                    {address.state}
-                  </li>
-                  <li>
-                    <span className="font-semibold">Pincode: </span>
-                    {address.pincode}
-                  </li>
-                </ul>
-              </div>
-            ))}
-          </div>
-          {recentAddresses.length === 0 && (
+
+          {recentAddresses.length > 0 ? (
+            <div className="flex flex-wrap gap-4">
+              {recentAddresses.map((address, index) => (
+                <div
+                  key={index}
+                  className="w-full sm:w-[300px] md:w-[350px] lg:w-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-5"
+                >
+                  <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white mb-4">
+                    Delivery Details
+                  </h5>
+                  <ul className="text-gray-700 dark:text-gray-300 space-y-2">
+                    <li>
+                      <span className="font-semibold">Receiver Name: </span>
+                      {address.addresseeName}
+                    </li>
+                    <li>
+                      <span className="font-semibold">Contact Number: </span>
+                      {address.addresseePhone}
+                    </li>
+                    <li>
+                      <span className="font-semibold">Full Address: </span>
+                      {address.fullAddress}
+                    </li>
+                    <li>
+                      <span className="font-semibold">Locality: </span>
+                      {address.locality}
+                    </li>
+                    <li>
+                      <span className="font-semibold">City: </span>
+                      {address.city}
+                    </li>
+                    <li>
+                      <span className="font-semibold">State: </span>
+                      {address.state}
+                    </li>
+                    <li>
+                      <span className="font-semibold">Pincode: </span>
+                      {address.pincode}
+                    </li>
+                  </ul>
+                </div>
+              ))}
+            </div>
+          ) : (
             <p className="text-gray-600">
               No recent orders.{" "}
               <span
