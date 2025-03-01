@@ -284,19 +284,6 @@ const CheckoutComponent = () => {
                   <span>Online Payment</span>
                 </label>
               </div>
-              <div>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="COD"
-                    checked={paymentMethod === "COD"}
-                    onChange={() => setPaymentMethod("COD")}
-                    className="mr-2"
-                  />
-                  <span>Cash on Delivery</span>
-                </label>
-              </div>
             </div>
           </div>
 

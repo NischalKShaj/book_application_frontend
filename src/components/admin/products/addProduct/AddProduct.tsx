@@ -56,6 +56,10 @@ const AddProduct = () => {
       data.append("images", image);
     });
 
+    for (const [key, value] of data.entries()) {
+      console.log(`${key}, ${value}`);
+    }
+
     try {
       const response = await axiosInstance.post("/admin/products/add", data);
 
@@ -127,7 +131,7 @@ const AddProduct = () => {
             />
           </div>
           <div className="flex flex-col">
-            <label htmlFor="price" className="mb-1 font-medium">
+            <label htmlFor="stock" className="mb-1 font-medium">
               Stock
             </label>
             <input

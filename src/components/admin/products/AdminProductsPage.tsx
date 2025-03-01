@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // <======================= file to show the products in the admin side ====================>
 
 "use client";
@@ -9,6 +10,8 @@ import axiosInstance from "@/lib/axios/axiosInstance";
 import { useRouter } from "next/navigation";
 import { Edit, Trash2 } from "lucide-react";
 import Image from "next/image";
+import EditProduct from "@/components/modal/EditProduct";
+import Swal from "sweetalert2";
 
 type Products = Product[];
 
@@ -16,6 +19,15 @@ const AdminProductsPage = () => {
   const [products, setProducts] = useState<Products>([]);
   const router = useRouter();
   const isAuthorized = adminStore((state) => state.isAuthorized);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>({
+    _id: "",
+    bookName: "",
+    bookDescription: "",
+    amount: 0,
+    stock: 0,
+    images: [],
+  });
 
   useEffect(() => {
     if (isAuthorized) {
@@ -36,6 +48,59 @@ const AdminProductsPage = () => {
     }
   };
 
+  // for updating the product
+  const updateProductInState = (updatedProduct: Product) => {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product._id === updatedProduct._id ? updatedProduct : product
+      )
+    );
+  };
+
+  // for getting the particular product
+  const getProduct = async (id: string) => {
+    try {
+      const response = await axiosInstance.get(`/admin/product/${id}`);
+      if (response.status === 202) {
+        console.log("response", response.data.product);
+        return response.data.product;
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
+
+  // for editing the product
+  const editProduct = async (id: string) => {
+    const product = await getProduct(id);
+    console.log("response while opening", product);
+    setOpenModal(true);
+    setSelectedProduct(product);
+  };
+
+  // for deleting the product
+  const handleDeleteProduct = async (id: string) => {
+    try {
+      const response = await axiosInstance.delete(
+        `/admin/delete/product/${id}`
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Deleted",
+          text: "Product deleted successfully",
+          icon: "success",
+        });
+        setProducts(products.filter((product) => product._id !== id));
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Failure",
+        text: "Oops something went wrong",
+        icon: "warning",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <main className="container mx-auto px-4 py-8">
@@ -43,16 +108,16 @@ const AdminProductsPage = () => {
           Product Management
         </h1>
         <div className="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.length > 0 ? (
+          {products ? (
             products.map((product, index) => (
               <div
                 key={index}
                 className="bg-white rounded-lg shadow-md overflow-hidden"
               >
-                <div className="relative h-48 bg-gray-200">
+                <div className="relative h-96 bg-gray-200">
                   {product.images && product.images.length > 0 ? (
                     <Image
-                      src={product.images[0]}
+                      src={product.images[1]}
                       alt={product.bookName}
                       layout="fill"
                       objectFit="cover"
@@ -75,10 +140,16 @@ const AdminProductsPage = () => {
                   </p>
                   <p className="text-gray-600 mb-4">Stock: {product.stock}</p>
                   <div className="flex justify-between">
-                    <button className="flex items-center text-blue-600 hover:text-blue-800">
+                    <button
+                      onClick={() => editProduct(product._id)}
+                      className="flex items-center text-blue-600 hover:text-blue-800"
+                    >
                       <Edit size={18} className="mr-1" /> Edit
                     </button>
-                    <button className="flex items-center text-red-600 hover:text-red-800">
+                    <button
+                      onClick={() => handleDeleteProduct(product._id)}
+                      className="flex items-center text-red-600 hover:text-red-800"
+                    >
                       <Trash2 size={18} className="mr-1" /> Delete
                     </button>
                   </div>
@@ -91,6 +162,17 @@ const AdminProductsPage = () => {
             </div>
           )}
         </div>
+        {openModal && (
+          <div>
+            <EditProduct
+              onClose={() => {
+                setOpenModal(false);
+                fetchData();
+              }}
+              product={selectedProduct}
+            />
+          </div>
+        )}
       </main>
     </div>
   );

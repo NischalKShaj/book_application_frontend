@@ -51,11 +51,11 @@ const ProductComponent = () => {
                 className="bg-white rounded-lg shadow overflow-hidden"
               >
                 <Image
-                  src={book.images[0]}
+                  src={book.images[1]}
                   alt={book.bookName}
                   width={150}
                   height={200}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-60 object-cover"
                 />
                 <div className="p-4">
                   <h3 className="font-medium text-[#333333] mb-2">

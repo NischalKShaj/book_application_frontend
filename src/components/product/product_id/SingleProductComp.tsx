@@ -68,7 +68,7 @@ const SingleProductComp = ({ id }: { id: string }) => {
                   alt={product.bookName}
                   width={400}
                   height={500}
-                  className="rounded-lg object-cover h-full w-full"
+                  className="rounded-lg object-contain h-full w-full"
                 />
               </div>
 

@@ -133,14 +133,14 @@ const CartComponents = () => {
                   className="flex items-center border-b border-gray-200 p-4"
                 >
                   <Image
-                    src={item.images[0]}
+                    src={item.images[1]}
                     alt={item.title}
                     width={300}
                     height={390}
                     className="rounded-md mr-4"
                   />
                   <div className="flex-grow">
-                    <h3 className="font-medium text-[#333333] mb-1">
+                    <h3 className="font-bold text-[#333333] mb-1">
                       {item.title}
                     </h3>
                     <h3 className="font-medium text-[#333333] mb-1">
