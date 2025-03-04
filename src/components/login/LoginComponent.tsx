@@ -101,7 +101,7 @@ const LoginComponent = () => {
         </div>
         <div className="bg-white shadow-lg rounded-lg p-8">
           <h1 className="text-2xl font-bold text-[#1a237e] mb-6 text-center">
-            Loin In
+            Log In
           </h1>
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && <p className="text-red-500 mt-2">{error}</p>}

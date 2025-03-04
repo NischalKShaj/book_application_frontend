@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import axiosInstance from "@/lib/axios/axiosInstance";
 import { OrderItem } from "@/types/types";
-import ReturnCancel from "../modal/ReturnCancel";
 
 type Order = {
   id: string;
@@ -91,20 +90,13 @@ const OrderHistory = () => {
     router.push("/product");
   };
 
-  // function for cancelling the order
-  const handleCancelOrder = (orderId: number, orderStatus: string) => {
-    // Logic for canceling the order
-    console.log(`Order ${orderId} has been canceled`);
-    setOpenModal(true);
-    setSelectedOrder({ orderId: orderId, orderStatus: orderStatus });
-  };
-
   // function for returning the order
-  const handleReturnOrder = (orderId: number, orderStatus: any) => {
-    // Logic for returning the order
-    console.log(`Order ${orderId} has been returned`);
-    setOpenModal(true);
-    setSelectedOrder({ orderId: orderId, orderStatus: orderStatus });
+  const handleTrackOrder = (trackingId: number) => {
+    try {
+      // for redirecting to the postal tracking page
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   // function for downloading the invoice for the orders
@@ -178,6 +170,9 @@ const OrderHistory = () => {
                 <div className="mb-4 flex justify-between items-center">
                   <h3 className="text-lg font-medium text-[#333333]">
                     Order ID: #{order.id}
+                  </h3>
+                  <h3 className="text-lg font-medium text-[#333333]">
+                    Tracking ID: #{order.id}
                   </h3>
                   <p className="text-gray-500">
                     {new Date(order.date).toLocaleDateString()}
@@ -257,23 +252,12 @@ const OrderHistory = () => {
 
                 {/* Buttons */}
                 <div className="mt-4 flex space-x-4">
-                  {order.status !== "delivered" &&
-                    order.status !== "canceled" && (
-                      <button
-                        onClick={() =>
-                          handleCancelOrder(order.id, order.status)
-                        }
-                        className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full"
-                      >
-                        Cancel Order
-                      </button>
-                    )}
-                  {order.status === "delivered" && (
+                  {order.status === "shipped" && (
                     <button
-                      onClick={() => handleReturnOrder(order.id, order.status)}
+                      onClick={() => handleTrackOrder(order.id)}
                       className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full"
                     >
-                      Return Order
+                      Track Order
                     </button>
                   )}
                   <button
@@ -288,15 +272,6 @@ const OrderHistory = () => {
           </div>
         )}
       </main>
-      {openModal && (
-        <div>
-          <ReturnCancel
-            onClose={() => setOpenModal(false)}
-            orderId={selectedOrder?.orderId}
-            orderStatus={selectedOrder?.orderStatus}
-          />
-        </div>
-      )}
     </div>
   );
 };

@@ -77,24 +77,22 @@ const OrderComponent = () => {
                   className="w-full px-6 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-[#1a237e] text-sm"
                 >
                   <option className="w-full px-6 py-3" value="pending">
-                    Pending
+                    Order Received
                   </option>
                   <option className="w-full px-6 py-3" value="shipped">
                     Shipped
                   </option>
-                  <option className="w-full px-6 py-3" value="out-for-delivery">
-                    Out for Delivery
-                  </option>
                   <option className="w-full px-6 py-3" value="delivered">
                     Delivered
                   </option>
-                  <option className="w-full px-6 py-3" value="cancelled">
-                    Cancelled
-                  </option>
-                  <option className="w-full px-6 py-3" value="returned">
-                    Returned
-                  </option>
                 </select>
+                <input
+                  id="trackingId"
+                  type="text"
+                  // onChange={handleLogin}
+                  placeholder="Enter tracking id"
+                  className="outline outline-1 outline-gray-500 rounded px-2 py-1"
+                />
                 <button
                   onClick={handleUpdateOrderStatus}
                   className="w-full px-6 py-3 bg-[#d84315] hover:bg-[#bf360c] rounded-lg text-white"

@@ -195,20 +195,6 @@ const ProfileComponent = () => {
             </p>
           )}
         </div>
-
-        {/* Wishlist */}
-        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Wishlist</h2>
-          <p className="text-gray-600">
-            Your wishlist is empty.{" "}
-            <span
-              onClick={handleProductPage}
-              className="text-blue-500 cursor-pointer"
-            >
-              Browse products
-            </span>
-          </p>
-        </div>
       </div>
     </div>
   );

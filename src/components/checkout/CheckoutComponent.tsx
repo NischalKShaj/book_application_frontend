@@ -114,84 +114,68 @@ const CheckoutComponent = () => {
         email: user?.email,
         phone: user?.phoneNumber,
       };
-      let response;
-      switch (paymentMethod) {
-        case "COD":
-          response = await axiosInstance.post("/cart/confirm-order", orderData);
-          if (response.status === 201) {
+
+      const scriptLoaded = await loadScript(
+        "https://checkout.razorpay.com/v1/checkout.js"
+      );
+
+      if (!scriptLoaded) {
+        throw new Error("Failed to load Razorpay script");
+      }
+      const response = await axiosInstance.post("/online-payment", {
+        amount: parseFloat(getTotalPrice()),
+        userId: user?._id,
+        username: user?.username,
+        email: user?.email,
+        phone: user?.phoneNumber,
+      });
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+        amount: response.data.amount,
+        currency: response.data.currency,
+        name: "application name",
+        description: `Payment for ${user?.username}`,
+        order_id: response.data.id,
+
+        handler: async function (response: any) {
+          try {
+            const verification = await axiosInstance.post(
+              `/api/payment-success`,
+              { orderData, response }
+            );
+            if (verification.data.success) {
+              SweetAlert.fire({
+                title: "Payment Success!",
+                text: "Thank you for your order. We'll notify you once your order is on its way. If you have any questions, feel free to contact us.",
+                icon: "success",
+                confirmButtonText: "OK",
+              });
+              router.push("/cart");
+            } else {
+              SweetAlert.fire({
+                title: "Payment Failed!",
+                text: "Your payment has been rejected!",
+                icon: "warning",
+                confirmButtonText: "OK",
+              });
+            }
+          } catch (error) {
             SweetAlert.fire({
-              title: "Order Placed Successfully!",
-              text: "Thank you for your order. We'll notify you once your order is on its way. If you have any questions, feel free to contact us.",
-              icon: "success",
+              title: "Payment Failed!",
+              text: "Your payment has been rejected!",
+              icon: "warning",
               confirmButtonText: "OK",
             });
-            router.push("/cart");
           }
-          break;
-        case "Online Payment":
-          const scriptLoaded = await loadScript(
-            "https://checkout.razorpay.com/v1/checkout.js"
-          );
+        },
 
-          if (!scriptLoaded) {
-            throw new Error("Failed to load Razorpay script");
-          }
-          response = await axiosInstance.post("/online-payment", {
-            amount: parseFloat(getTotalPrice()),
-            userId: user?._id,
-            username: user?.username,
-            email: user?.email,
-            phone: user?.phoneNumber,
-          });
-
-          const options = {
-            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-            amount: response.data.amount,
-            currency: response.data.currency,
-            name: "application name",
-            description: `Payment for ${user?.username}`,
-            order_id: response.data.id,
-
-            handler: async function (response: any) {
-              try {
-                const verification = await axiosInstance.post(
-                  `/api/payment-success`,
-                  { orderData, response }
-                );
-                if (verification.data.success) {
-                  SweetAlert.fire({
-                    title: "Payment Success!",
-                    text: "Thank you for your order. We'll notify you once your order is on its way. If you have any questions, feel free to contact us.",
-                    icon: "success",
-                    confirmButtonText: "OK",
-                  });
-                  router.push("/cart");
-                } else {
-                  SweetAlert.fire({
-                    title: "Payment Failed!",
-                    text: "Your payment has been rejected!",
-                    icon: "warning",
-                    confirmButtonText: "OK",
-                  });
-                }
-              } catch (error) {
-                SweetAlert.fire({
-                  title: "Payment Failed!",
-                  text: "Your payment has been rejected!",
-                  icon: "warning",
-                  confirmButtonText: "OK",
-                });
-              }
-            },
-
-            theme: {
-              color: "#1a202c",
-            },
-          };
-          const razor = new (window as any).Razorpay(options);
-          razor.open();
-          break;
-      }
+        theme: {
+          color: "#1a202c",
+        },
+      };
+      const razor = new (window as any).Razorpay(options);
+      razor.open();
     } catch (error) {
       console.error("Error placing order:", error);
       SweetAlert.fire({

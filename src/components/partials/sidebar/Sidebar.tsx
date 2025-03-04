@@ -14,10 +14,6 @@ const Sidebar = () => {
   const router = useRouter();
   const [openModal, setOpenModal] = useState(false);
 
-  // for the wishlist
-  const handleWishlist = () => {
-    alert("Wishlist will be added shortly");
-  };
   // for moving to the order page
   const handleOrders = () => {
     router.push("/order");
@@ -81,14 +77,7 @@ const Sidebar = () => {
               Orders
             </button>
           </li>
-          <li>
-            <button
-              onClick={handleWishlist}
-              className="w-full text-left bg-gray-200 text-[#333333] hover:bg-gray-300 px-4 py-2 rounded-lg"
-            >
-              Wishlist
-            </button>
-          </li>
+
           {/* will be added in version 2.0 */}
           {/* <li>
             <button className="w-full text-left bg-gray-200 text-[#333333] hover:bg-gray-300 px-4 py-2 rounded-lg">
