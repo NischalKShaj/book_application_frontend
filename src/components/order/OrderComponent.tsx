@@ -76,7 +76,7 @@ const OrderHistory = () => {
   // for fetching the order history for the user
   const fetchOrderHistory = async (id: string | undefined) => {
     try {
-      const response = await axiosInstance.get(`orders/${id}`);
+      const response = await axiosInstance.get(`/orders/${id}`);
       if (response.status === 202) {
         setOrders(transformOrders(response.data.data));
         console.log("response", response.data.data);

@@ -8,12 +8,7 @@ import axiosInstance from "@/lib/axios/axiosInstance";
 import { Users } from "@/types/types";
 
 const UserComponent = () => {
-  const [isBlocked, setIsBlocked] = useState(false);
   const [users, setUsers] = useState<Users[]>([]);
-
-  const toggleBlockStatus = () => {
-    setIsBlocked((prevStatus) => !prevStatus);
-  };
 
   // for loading the users in the initial loading of the application
   useEffect(() => {
@@ -44,7 +39,7 @@ const UserComponent = () => {
           {users.map((user) => (
             <div
               key={user._id}
-              className="bg-white rounded-lg shadow-md flex flex-col items-center p-6 w-80 h-[400px]"
+              className="bg-white rounded-lg shadow-md flex flex-col items-center p-6 w-80 h-[300px]"
             >
               {/* Profile Picture */}
               <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden mb-4">
@@ -68,16 +63,6 @@ const UserComponent = () => {
                     {user.phoneNumber}
                   </p>
                 </div>
-                <button
-                  onClick={toggleBlockStatus}
-                  className={`mt-4 px-4 py-2 rounded-md text-sm font-medium ${
-                    isBlocked
-                      ? "bg-green-100 text-green-600 hover:bg-green-200"
-                      : "bg-red-100 text-red-600 hover:bg-red-200"
-                  }`}
-                >
-                  {isBlocked ? "Unblock" : "Block"}
-                </button>
               </div>
             </div>
           ))}
