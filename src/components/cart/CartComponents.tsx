@@ -17,6 +17,9 @@ const CartComponents = () => {
   const user = userStore((state) => state.user);
   const [isLoading, setIsLoading] = useState(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  // const [disabledButtons, setDisabledButtons] = useState<
+  //   Record<string, boolean>
+  // >({});
 
   // function for loading the cart contents of the user
   const loadCart = async (id: string | undefined) => {
@@ -53,6 +56,7 @@ const CartComponents = () => {
     return <div>Loading...</div>;
   }
 
+  // function for handling the quantity change
   const handleQuantityChange = (id: number, change: number) => {
     setCartItems((items) =>
       items
