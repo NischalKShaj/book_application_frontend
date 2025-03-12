@@ -70,6 +70,7 @@ export interface Product {
 // interface for cart
 export interface CartItem {
   id: number;
+  productId: number;
   title: string;
   price: number;
   images: string[];

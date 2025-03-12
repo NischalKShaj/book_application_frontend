@@ -17,20 +17,19 @@ const CartComponents = () => {
   const user = userStore((state) => state.user);
   const [isLoading, setIsLoading] = useState(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  // const [disabledButtons, setDisabledButtons] = useState<
-  //   Record<string, boolean>
-  // >({});
 
   // function for loading the cart contents of the user
   const loadCart = async (id: string | undefined) => {
     try {
       const response = await axiosInstance.get(`/cart/${id}`);
       if (response.status === 200) {
+        console.log("response of the loadCart", response.data);
         console.log("response", response.data.cart);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const transformedCart = response.data.cart.map((item: any) => ({
           id: item._id,
           title: item.bookName,
+          productId: item.productId,
           price: item.amount,
           description: item.bookDescription,
           quantity: item.quantity,
@@ -57,7 +56,13 @@ const CartComponents = () => {
   }
 
   // function for handling the quantity change
-  const handleQuantityChange = (id: number, change: number) => {
+  const handleQuantityChange = async (id: number, change: number) => {
+    // Ensure id is always a string
+
+    const cartItem = cartItems.find((item) => item.id === id);
+    const productId = cartItem?.productId;
+
+    // Update cart items
     setCartItems((items) =>
       items
         .map((item) =>
@@ -67,6 +72,21 @@ const CartComponents = () => {
         )
         .filter((item) => item.quantity > 0)
     );
+
+    try {
+      const response = await axiosInstance.patch("/update-cart-quantity", {
+        userId: user?._id,
+        productId: productId,
+        cartId: id,
+        quantity: change,
+      });
+
+      if (response.status === 200) {
+        console.log("response", response.data);
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   const getTotalPrice = () => {
@@ -155,7 +175,12 @@ const CartComponents = () => {
                   <div className="flex items-center">
                     <button
                       onClick={() => handleQuantityChange(item.id, -1)}
-                      className="bg-gray-200 text-gray-600 px-2 py-1 rounded-l"
+                      disabled={item.quantity === 1}
+                      className={`bg-gray-200 text-gray-600 px-2 py-1 rounded-l ${
+                        item.quantity === 1
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
                     >
                       -
                     </button>
@@ -164,7 +189,7 @@ const CartComponents = () => {
                     </span>
                     <button
                       onClick={() => handleQuantityChange(item.id, 1)}
-                      className="bg-gray-200 text-gray-600 px-2 py-1 rounded-r"
+                      className={`bg-gray-200 text-gray-600 px-2 py-1 rounded-r`}
                     >
                       +
                     </button>
