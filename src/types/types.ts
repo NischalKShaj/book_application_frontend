@@ -96,6 +96,7 @@ export interface OrderItem {
   date: string;
   total: number;
   status: string;
+  trackingId: string;
   items: {
     id: number;
     title: string;

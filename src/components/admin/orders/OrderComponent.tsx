@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import axiosInstance from "@/lib/axios/axiosInstance";
+import Swal from "sweetalert2";
 
 interface Product {
   productId: string;
@@ -24,10 +25,15 @@ interface Order {
   paymentMethod: string;
   isCancel: boolean;
   createdAt: string;
+  trackingId: string;
 }
 
 const OrderComponent = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [updatedStatus, setUpdatedStatus] = useState<{ [key: string]: string }>(
+    {}
+  );
+  const [trackingIds, setTrackingIds] = useState<{ [key: string]: string }>({});
 
   // fetching the orders of all the users
   const fetchOrder = async () => {
@@ -47,8 +53,56 @@ const OrderComponent = () => {
     fetchOrder();
   }, []);
 
-  // function for updating the order status
-  const handleUpdateOrderStatus = async () => {};
+  // Handle input change
+  const handleStatusChange = (orderId: string, status: string) => {
+    setUpdatedStatus((prev) => ({ ...prev, [orderId]: status }));
+  };
+
+  const handleTrackingIdChange = (orderId: string, trackingId: string) => {
+    setTrackingIds((prev) => ({ ...prev, [orderId]: trackingId }));
+  };
+
+  // Handle order update
+  const handleUpdateOrderStatus = async (id: string) => {
+    const status = updatedStatus[id] || "";
+    const trackingId = trackingIds[id] || "";
+
+    if (!status || !trackingId) {
+      Swal.fire({
+        title: "Error",
+        text: "Please select a status and enter a tracking ID",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.patch(
+        `/admin/update-order-status/${id}`,
+        { status, trackingId }
+      );
+
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Updated Successfully",
+          text: "Order status updated successfully",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+        fetchOrder();
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      Swal.fire({
+        title: "Oops Something went wrong",
+        text: "Order status updating failed",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
       <main className="container mx-auto px-4 py-8">
@@ -68,6 +122,11 @@ const OrderComponent = () => {
               <h2 className="text-lg font-semibold text-[#1a237e]">
                 Order ID: {order._id}
               </h2>
+              {order.trackingId && (
+                <h2 className="text-lg font-semibold text-[#1a237e]">
+                  Tracking ID: {order.trackingId}
+                </h2>
+              )}
               <p className="text-gray-600">
                 <span className="font-semibold">Status:</span>{" "}
                 <span className="text-[#d84315]">{order.status}</span>
@@ -116,27 +175,37 @@ const OrderComponent = () => {
               {/* Update Status */}
               <div className="mt-4">
                 <label
-                  htmlFor="status"
+                  htmlFor={`status-${order._id}`}
                   className="block text-sm font-medium text-gray-700"
                 >
                   Update Status
                 </label>
                 <select
-                  id="status"
+                  id={`status-${order._id}`}
+                  value={updatedStatus[order._id] || ""}
+                  onChange={(e) =>
+                    handleStatusChange(order._id, e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-[#1a237e] text-sm"
                 >
+                  <option value="">Select Status</option>
                   <option value="pending">Order Received</option>
                   <option value="shipped">Shipped</option>
                   <option value="delivered">Delivered</option>
                 </select>
+
                 <input
-                  id="trackingId"
                   type="text"
                   placeholder="Enter tracking ID"
+                  value={trackingIds[order._id] || ""}
+                  onChange={(e) =>
+                    handleTrackingIdChange(order._id, e.target.value)
+                  }
                   className="w-full px-3 py-2 mt-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#1a237e]"
                 />
+
                 <button
-                  onClick={handleUpdateOrderStatus}
+                  onClick={() => handleUpdateOrderStatus(order._id)}
                   className="w-full px-4 py-2 mt-2 bg-[#d84315] hover:bg-[#bf360c] text-white rounded-md"
                 >
                   Update Order

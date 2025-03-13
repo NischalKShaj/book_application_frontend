@@ -62,6 +62,7 @@ const OrderHistory = () => {
       date: order.createdAt,
       status: order.status,
       total: order.totalAmount,
+      trackingId: order.trackingId,
       items: order.products.map((product: any) => ({
         id: product.productId,
         title: product.bookName,
@@ -108,12 +109,10 @@ const OrderHistory = () => {
   const getStatusProgressWidth = (status: string) => {
     // Calculate width based on status (replace with your logic)
     switch (status.toLowerCase()) {
-      case "pending":
-        return "20%";
+      case "order received":
+        return "33%";
       case "shipped":
-        return "50%";
-      case "out for delivery":
-        return "80%";
+        return "66%";
       case "delivered":
         return "100%";
       case "canceled":
@@ -127,12 +126,10 @@ const OrderHistory = () => {
 
   const getStatusProgress = (status: string) => {
     switch (status.toLowerCase()) {
-      case "pending":
+      case "order received":
         return "bg-amber-500";
       case "shipped":
         return "bg-blue-600";
-      case "out for delivery":
-        return "bg-teal-500";
       case "delivered":
         return "bg-emerald-500";
       case "canceled":
@@ -171,9 +168,11 @@ const OrderHistory = () => {
                   <h3 className="text-lg font-medium text-[#333333]">
                     Order ID: #{order.id}
                   </h3>
-                  <h3 className="text-lg font-medium text-[#333333]">
-                    Tracking ID: #{order.id}
-                  </h3>
+                  {order.trackingId && (
+                    <h3 className="text-lg font-medium text-[#333333]">
+                      Tracking ID: #{order.trackingId}
+                    </h3>
+                  )}
                   <p className="text-gray-500">
                     {new Date(order.date).toLocaleDateString()}
                   </p>
@@ -237,7 +236,7 @@ const OrderHistory = () => {
                   </div>
                   <div className="mt-2 text-sm text-gray-500">
                     <p>
-                      {order.status === "pending"
+                      {order.status === "Order Received"
                         ? "Your order has been placed successfully."
                         : order.status === "shipped"
                         ? "Your order is on the way."
