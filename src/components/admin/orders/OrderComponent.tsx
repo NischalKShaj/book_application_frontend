@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // component to show the orders of all the user
 "use client";
 // importing the required modules
@@ -18,7 +19,7 @@ interface Order {
   _id: string;
   userId: string;
   addressId: string;
-  cartId: string;
+  cartId: string[];
   products: Product[];
   totalAmount: number;
   status: string;
@@ -34,6 +35,7 @@ const OrderComponent = () => {
     {}
   );
   const [trackingIds, setTrackingIds] = useState<{ [key: string]: string }>({});
+  const [orderStatus, setOrderStatus] = useState(false);
 
   // fetching the orders of all the users
   const fetchOrder = async () => {
@@ -42,6 +44,7 @@ const OrderComponent = () => {
       if (response.status === 200) {
         console.log("repose", response.data);
         setOrders(response.data);
+        setOrderStatus(true);
       }
     } catch (error) {
       console.error("error", error);
@@ -103,13 +106,36 @@ const OrderComponent = () => {
     }
   };
 
+  // for showing the button for the status and update the component
+  const showStatus = async () => {
+    try {
+      setOrderStatus(!orderStatus);
+      const status = orderStatus === true ? "shipped" : "Order Received";
+      const response = await axiosInstance.post(`/admin/orders/${status}`);
+      if (response.status === 200) {
+        console.log("response", response.data);
+        setOrders(response.data);
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
       <main className="container mx-auto px-4 py-8">
         {/* Page Header */}
-        <h1 className="text-3xl font-bold text-[#1a237e] mb-8">
-          Order Management
-        </h1>
+        <div className="flex items-center space-x-4 mb-6">
+          <h1 className="text-3xl font-bold text-[#1a237e]">
+            Order Management
+          </h1>
+          <button
+            onClick={showStatus}
+            className="bg-[#d84315] hover:bg-[#bf360c] h-[50px] text-white px-6 py-2 text-lg font-bold rounded-md"
+          >
+            {orderStatus === true ? "Order Received" : "Shipped"}
+          </button>
+        </div>
 
         {/* Grid Container */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

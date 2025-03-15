@@ -11,7 +11,6 @@ import { adminStore } from "@/store/adminStore";
 const AdminHeader = () => {
   const [open, setOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const [orderStatus, setOrderStatus] = useState(false);
   const router = useRouter();
   const path = usePathname();
   const admin = adminStore((state) => state.admin);
@@ -19,7 +18,6 @@ const AdminHeader = () => {
 
   useEffect(() => {
     // Ensure this component renders only on the client
-    setOrderStatus(true);
     setIsClient(true);
   }, []);
 
@@ -33,15 +31,6 @@ const AdminHeader = () => {
     isLoggedOut();
     localStorage.removeItem("admin_access_token");
     router.push("/admin");
-  };
-
-  // for showing the button for the status
-  const showStatus = async () => {
-    try {
-      setOrderStatus(!orderStatus);
-    } catch (error) {
-      console.error("error", error);
-    }
   };
 
   if (!isClient) {
@@ -97,16 +86,7 @@ const AdminHeader = () => {
                 <input type="search" placeholder="search the product here" />
               </div>
             )}
-            {path === "/admin/orders" && (
-              <div className="space-x-6">
-                <button
-                  onClick={showStatus}
-                  className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 text-lg rounded-md"
-                >
-                  {orderStatus === true ? "Pending" : "Shipped"}
-                </button>
-              </div>
-            )}
+
             <button
               onClick={logout}
               className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 text-lg rounded-md"
