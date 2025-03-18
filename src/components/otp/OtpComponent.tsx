@@ -3,15 +3,20 @@
 "use client";
 
 // importing the required modules
+import axiosInstance from "@/lib/axios/axiosInstance";
 import { RandomStyle } from "@/types/types";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const OtpComponent = () => {
   const [randomValues, setRandomValues] = useState<RandomStyle[]>([]);
+  const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(120); // 2 minutes in seconds
   const [canResend, setCanResend] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     // Generate random values on the client side
@@ -41,10 +46,34 @@ const OtpComponent = () => {
     return () => clearInterval(countdown); // Cleanup the interval on component unmount
   }, []);
 
+  // for handling the value change in the otp field
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOtp(e.target.value);
+  };
+
   // Handle OTP submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add OTP submission logic here
+    try {
+      const otpNumber = Number(otp);
+      const formDataString = localStorage.getItem("formData");
+
+      if (!formDataString) {
+        console.error("No formData found in localStorage");
+        return;
+      }
+      const formData = JSON.parse(formDataString);
+      console.log("formData", formData);
+      const response = await axiosInstance.post("/signup", {
+        formData,
+        otp: otpNumber,
+      });
+      if (response.status === 201) {
+        router.push("/login");
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   // Format the timer as mm:ss
@@ -92,7 +121,8 @@ const OtpComponent = () => {
               <input
                 id="otp"
                 type="text"
-                // onChange={handleLogin}
+                value={otp}
+                onChange={handleChange}
                 placeholder="Enter your otp"
                 required
                 className="outline outline-1 outline-gray-500 rounded px-2 py-1"

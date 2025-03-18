@@ -106,7 +106,7 @@ const OrderComponent = () => {
     }
   };
 
-  // for showing the button for the status and update the component
+  // for showing the button for the status shipped and order received
   const showStatus = async () => {
     try {
       setOrderStatus(!orderStatus);
@@ -114,6 +114,19 @@ const OrderComponent = () => {
       const response = await axiosInstance.post(`/admin/orders/${status}`);
       if (response.status === 200) {
         console.log("response", response.data);
+        setOrders(response.data);
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
+
+  // for showing the order with status delivered
+  const showDelivered = async () => {
+    try {
+      const status = "delivered";
+      const response = await axiosInstance.post(`/admin/orders/${status}`);
+      if (response.status === 200) {
         setOrders(response.data);
       }
     } catch (error) {
@@ -135,110 +148,124 @@ const OrderComponent = () => {
           >
             {orderStatus === true ? "Order Received" : "Shipped"}
           </button>
+          <button
+            onClick={showDelivered}
+            className="bg-[#d84315] hover:bg-[#bf360c] h-[50px] text-white px-6 py-2 text-lg font-bold rounded-md"
+          >
+            Delivered
+          </button>
         </div>
 
         {/* Grid Container */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {orders.map((order) => (
-            <div
-              key={order._id}
-              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow p-6"
-            >
-              {/* Order ID and Status */}
-              <h2 className="text-lg font-semibold text-[#1a237e]">
-                Order ID: {order._id}
-              </h2>
-              {order.trackingId && (
+          {orders.length > 0 ? (
+            orders.map((order) => (
+              <div
+                key={order._id}
+                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow p-6"
+              >
+                {/* Order ID and Status */}
                 <h2 className="text-lg font-semibold text-[#1a237e]">
-                  Tracking ID: {order.trackingId}
+                  Order ID: {order._id}
                 </h2>
-              )}
-              <p className="text-gray-600">
-                <span className="font-semibold">Status:</span>{" "}
-                <span className="text-[#d84315]">{order.status}</span>
-              </p>
-              <p className="text-gray-600">
-                <span className="font-semibold">Payment:</span>{" "}
-                {order.paymentMethod}
-              </p>
-              <p className="text-gray-600">
-                <span className="font-semibold">Total:</span> ₹
-                {order.totalAmount}
-              </p>
-              <p className="text-gray-600">
-                <span className="font-semibold">Ordered On:</span>{" "}
-                {new Date(order.createdAt).toLocaleDateString()}
-              </p>
+                {order.trackingId && (
+                  <h2 className="text-lg font-semibold text-[#1a237e]">
+                    Tracking ID: {order.trackingId}
+                  </h2>
+                )}
+                <p className="text-gray-600">
+                  <span className="font-semibold">Status:</span>{" "}
+                  <span className="text-[#d84315]">{order.status}</span>
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-semibold">Payment:</span>{" "}
+                  {order.paymentMethod}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-semibold">Total:</span> ₹
+                  {order.totalAmount}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-semibold">Ordered On:</span>{" "}
+                  {new Date(order.createdAt).toLocaleDateString()}
+                </p>
 
-              {/* Product Details */}
-              <div className="mt-4">
-                {order.products.map((product, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center border-b pb-2 mb-2"
+                {/* Product Details */}
+                <div className="mt-4">
+                  {order.products.map((product, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center border-b pb-2 mb-2"
+                    >
+                      <div className="w-16 h-16 overflow-hidden rounded-md bg-gray-100">
+                        <Image
+                          src={product.images[0]} // Show first product image
+                          alt={product.bookName}
+                          width={64}
+                          height={64}
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-lg font-semibold">
+                          {product.bookName}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Quantity: {product.quantity} | ₹{product.amount}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Update Status */}
+                <div className="mt-4">
+                  <label
+                    htmlFor={`status-${order._id}`}
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    <div className="w-16 h-16 overflow-hidden rounded-md bg-gray-100">
-                      <Image
-                        src={product.images[0]} // Show first product image
-                        alt={product.bookName}
-                        width={64}
-                        height={64}
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-lg font-semibold">
-                        {product.bookName}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Quantity: {product.quantity} | ₹{product.amount}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                    Update Status
+                  </label>
+                  <select
+                    id={`status-${order._id}`}
+                    value={updatedStatus[order._id] || ""}
+                    onChange={(e) =>
+                      handleStatusChange(order._id, e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-[#1a237e] text-sm"
+                  >
+                    <option value="">Select Status</option>
+                    <option value="pending">Order Received</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                  </select>
+
+                  <input
+                    type="text"
+                    placeholder="Enter tracking ID"
+                    value={trackingIds[order._id] || ""}
+                    onChange={(e) =>
+                      handleTrackingIdChange(order._id, e.target.value)
+                    }
+                    className="w-full px-3 py-2 mt-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#1a237e]"
+                  />
+
+                  <button
+                    onClick={() => handleUpdateOrderStatus(order._id)}
+                    className="w-full px-4 py-2 mt-2 bg-[#d84315] hover:bg-[#bf360c] text-white rounded-md"
+                  >
+                    Update Order
+                  </button>
+                </div>
               </div>
-
-              {/* Update Status */}
-              <div className="mt-4">
-                <label
-                  htmlFor={`status-${order._id}`}
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Update Status
-                </label>
-                <select
-                  id={`status-${order._id}`}
-                  value={updatedStatus[order._id] || ""}
-                  onChange={(e) =>
-                    handleStatusChange(order._id, e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-[#1a237e] text-sm"
-                >
-                  <option value="">Select Status</option>
-                  <option value="pending">Order Received</option>
-                  <option value="shipped">Shipped</option>
-                  <option value="delivered">Delivered</option>
-                </select>
-
-                <input
-                  type="text"
-                  placeholder="Enter tracking ID"
-                  value={trackingIds[order._id] || ""}
-                  onChange={(e) =>
-                    handleTrackingIdChange(order._id, e.target.value)
-                  }
-                  className="w-full px-3 py-2 mt-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#1a237e]"
-                />
-
-                <button
-                  onClick={() => handleUpdateOrderStatus(order._id)}
-                  className="w-full px-4 py-2 mt-2 bg-[#d84315] hover:bg-[#bf360c] text-white rounded-md"
-                >
-                  Update Order
-                </button>
-              </div>
+            ))
+          ) : (
+            <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-col items-center justify-center">
+              <p className="text-2xl font-semibold text-gray-500">
+                No Orders Found
+              </p>
             </div>
-          ))}
+          )}
         </div>
       </main>
     </div>

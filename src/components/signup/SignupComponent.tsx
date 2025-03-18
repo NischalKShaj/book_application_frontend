@@ -62,12 +62,24 @@ const SignupComponent = () => {
       // validating the form-data
       await signupSchema.validate(formData, { abortEarly: false });
 
-      const response = await axiosInstance.post("/signup", formData);
+      // const response = await axiosInstance.post("/signup", formData);
 
-      if (response.status === 201) {
+      // storing the data in the ls before saving in the db
+      localStorage.setItem("formData", JSON.stringify(formData));
+
+      // for adding the country code +91
+      const formattedPhoneNumber = formData.phoneNumber.startsWith("+91")
+        ? formData.phoneNumber
+        : `+91${formData.phoneNumber}`;
+
+      const response = await axiosInstance.post("/otp", {
+        phoneNumber: formattedPhoneNumber,
+      });
+
+      if (response.status === 200) {
         console.log(response.data, "received data");
+        router.push("/otp");
       }
-      router.push("/login");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error.name === "ValidationError") {
