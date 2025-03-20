@@ -101,9 +101,17 @@ const OrderHistory = () => {
   };
 
   // function for downloading the invoice for the orders
-  const handleDownloadInvoice = (orderId: number) => {
+  const handleDownloadInvoice = async (orderId: number) => {
+    const userId = user?._id;
     // Logic for downloading the invoice
-    console.log(`Downloading invoice for Order ${orderId}`);
+    try {
+      const response = await axiosInstance.get(
+        `/order/invoice/${orderId}/${userId}`
+      );
+      console.log("response", response.data);
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   const getStatusProgressWidth = (status: string) => {
@@ -168,7 +176,7 @@ const OrderHistory = () => {
                   <h3 className="text-lg font-medium text-[#333333]">
                     Order ID: #{order.id}
                   </h3>
-                  {order.trackingId && (
+                  {order.trackingId != "No id found" && (
                     <h3 className="text-lg font-medium text-[#333333]">
                       Tracking ID: #{order.trackingId}
                     </h3>
@@ -259,12 +267,14 @@ const OrderHistory = () => {
                       Track Order
                     </button>
                   )}
-                  <button
-                    onClick={() => handleDownloadInvoice(order.id)}
-                    className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-full"
-                  >
-                    Download Invoice
-                  </button>
+                  {order.status !== "Order Received" && (
+                    <button
+                      onClick={() => handleDownloadInvoice(order.id)}
+                      className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-full"
+                    >
+                      Download Invoice
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
