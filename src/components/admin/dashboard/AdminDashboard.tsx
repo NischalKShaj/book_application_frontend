@@ -1,6 +1,7 @@
 // <=========================================== file for admin dashboard ==================>
 
 // importing the required modules
+import OrderPerDay from "@/components/graphs/OrderPerDay";
 import TopProduct from "@/components/graphs/TopProduct";
 import React from "react";
 
@@ -13,6 +14,7 @@ const AdminDashboard = () => {
       <div className="flex justify-start">
         {/* Moves slightly left */}
         <TopProduct />
+        <OrderPerDay />
       </div>
     </div>
   );

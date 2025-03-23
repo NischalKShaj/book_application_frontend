@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// <=============================== file for showing the top 5 products =============>
+// <========================== file to show the most order per day ================>
 "use client";
 
 // importing the required modules
@@ -10,7 +10,7 @@ import axiosInstance from "@/lib/axios/axiosInstance";
 
 const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const TopProduct = () => {
+const OrderPerDay = () => {
   const [chartData, setChartData] = useState<{
     series: { name: string; data: number[] }[];
     options: ApexOptions;
@@ -25,40 +25,44 @@ const TopProduct = () => {
   // for fetching the data for the top product graph
   const fetchData = async () => {
     try {
-      const response = await axiosInstance.get("/admin/top-product-graph");
+      const response = await axiosInstance.get("/admin/most-order-per-day");
       if (response.status === 200) {
         console.log("response", response.data);
-        const products = response.data; // Ensure it's an array
-        if (!Array.isArray(products) || products.length === 0) {
-          console.warn("No products found.");
+        const dailyData = response.data;
+
+        if (!Array.isArray(dailyData) || dailyData.length === 0) {
+          console.warn("No daily data found.");
           return;
         }
 
-        const productNames = products.map((p: any) => p.bookName);
-        const salesData = products.map((p: any) => p.totalSales);
-
-        console.log("Products:", productNames); // Debugging
+        const dates = dailyData.map((day: any) =>
+          new Date(day.date).toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          })
+        );
+        const sales = dailyData.map((day: any) => day.totalSales);
 
         setChartData({
-          series: [{ name: "Total Sales", data: salesData }],
+          series: [{ name: "Total Sales", data: sales }],
           options: {
             chart: { type: "bar", height: 350, toolbar: { show: false } },
             xaxis: {
-              categories: [...new Set(productNames)],
+              categories: dates,
               labels: {
                 style: { fontSize: "12px", fontWeight: "bold" },
               },
-
-              title: { text: "Books" },
+              title: { text: "Days" },
             },
             yaxis: {
               labels: { style: { fontSize: "14px", fontWeight: "bold" } },
-              title: { text: "Price (₹)" },
+              title: { text: "Total Sales" },
             },
             plotOptions: {
               bar: {
                 horizontal: false,
-                columnWidth: "60%", // Reduced columnWidth to increase gap
+                columnWidth: "60%",
                 borderRadius: 3,
               },
             },
@@ -78,9 +82,7 @@ const TopProduct = () => {
 
   return (
     <div className="p-6 bg-gray-300 shadow-lg rounded-lg w-[500px] ml-20">
-      <h2 className="text-2xl font-bold text-  text-gray-800 mb-4">
-        📊 Top Selling Books
-      </h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">📊 Weekly Sales</h2>
       <div className="flex justify-start">
         <ApexChart
           options={chartData.options}
@@ -94,4 +96,4 @@ const TopProduct = () => {
   );
 };
 
-export default TopProduct;
+export default OrderPerDay;
