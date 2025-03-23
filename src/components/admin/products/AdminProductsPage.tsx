@@ -17,6 +17,7 @@ type Products = Product[];
 
 const AdminProductsPage = () => {
   const [products, setProducts] = useState<Products>([]);
+  const [pageNumber, setPageNumber] = useState(1);
   const router = useRouter();
   const isAuthorized = adminStore((state) => state.isAuthorized);
   const [openModal, setOpenModal] = useState(false);
@@ -35,16 +36,28 @@ const AdminProductsPage = () => {
     } else {
       router.push("/admin/login");
     }
-  }, []);
+  }, [pageNumber]);
 
   const fetchData = async () => {
     try {
-      const response = await axiosInstance.get("/admin/products");
+      const response = await axiosInstance.get("/admin/products", {
+        params: { page: pageNumber },
+      });
       if (response.status === 202) {
         setProducts(response.data.products);
       }
     } catch (error) {
       console.error("error", error);
+    }
+  };
+
+  const handleNextPage = () => {
+    setPageNumber((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber((prev) => prev - 1);
     }
   };
 
@@ -161,6 +174,27 @@ const AdminProductsPage = () => {
               No products available
             </div>
           )}
+        </div>
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={handlePreviousPage}
+            disabled={pageNumber === 1}
+            className="bg-[#d84315] hover:bg-[#bf360c] text-white px-4 py-2 rounded-md mr-2"
+          >
+            Previous
+          </button>
+          <button
+            onClick={handleNextPage}
+            disabled={!products}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md 
+    ${
+      products
+        ? "bg-[#d84315] hover:bg-[#bf360c] text-white"
+        : "bg-gray-400 cursor-not-allowed"
+    }`}
+          >
+            Next
+          </button>
         </div>
         {openModal && (
           <div>

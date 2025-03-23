@@ -13,20 +13,33 @@ type Products = Product[];
 
 const ProductComponent = () => {
   const [products, setProducts] = useState<Products>([]);
+  const [pageNumber, setPageNumber] = useState(1);
   const router = useRouter();
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [pageNumber]);
 
   // for fetching the data from the backend
   const fetchData = async () => {
     try {
-      const response = await axiosInstance.get("/products");
+      const response = await axiosInstance.get("/products", {
+        params: { page: pageNumber },
+      });
       if (response.status === 202) {
         setProducts(response.data.products);
       }
     } catch (error) {
       console.error("error", error);
+    }
+  };
+
+  const handleNextPage = () => {
+    setPageNumber((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber((prev) => prev - 1);
     }
   };
 
@@ -43,47 +56,77 @@ const ProductComponent = () => {
           <h2 className="text-2xl font-semibold text-[#1a237e] mb-4">
             Bestsellers
           </h2>
-          <div className="grid grid-cols-4 md:grid-cols-4 gap-6 cursor-pointer">
-            {products.map((book) => (
-              <div
-                onClick={() => singleProduct(book._id)}
-                key={book._id}
-                className="bg-white rounded-lg shadow overflow-hidden"
-              >
-                <Image
-                  src={book.images[1]}
-                  alt={book.bookName}
-                  width={150}
-                  height={200}
-                  className="w-full h-60 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="font-medium text-[#333333] mb-2">
-                    Book Title {book.bookName}
-                  </h3>
-                  <h3 className="font-medium text-[#333333] mb-2">
-                    ₹ {book.amount}/-
-                  </h3>
+          {products ? (
+            <>
+              <div className="grid grid-cols-4 md:grid-cols-4 gap-6 cursor-pointer">
+                {products.map((book) => (
+                  <div
+                    onClick={() => singleProduct(book._id)}
+                    key={book._id}
+                    className="bg-white rounded-lg shadow overflow-hidden"
+                  >
+                    <Image
+                      src={book.images[1]}
+                      alt={book.bookName}
+                      width={150}
+                      height={200}
+                      className="w-full h-60 object-cover"
+                    />
+                    <div className="p-4">
+                      <h3 className="font-medium text-[#333333] mb-2">
+                        Book Title {book.bookName}
+                      </h3>
+                      <h3 className="font-medium text-[#333333] mb-2">
+                        ₹ {book.amount}/-
+                      </h3>
 
-                  {/* Button or Cart Icon */}
-                  <div className="flex items-center justify-between">
-                    {/* Show button on larger screens, cart icon on smaller screens */}
-                    {/* <button className="hidden sm:block w-full bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-md">
-                      Add to Cart
-                    </button> */}
-
-                    <div className="sm:hidden">
-                      <ShoppingCart
-                        size={24} // size of the icon
-                        color="#d84315" // icon color
-                        className="cursor-pointer"
-                      />
+                      {/* Button or Cart Icon */}
+                      <div className="flex items-center justify-between">
+                        {/* Show button on larger screens, cart icon on smaller screens */}
+                        <div className="sm:hidden">
+                          <ShoppingCart
+                            size={24}
+                            color="#d84315"
+                            className="cursor-pointer"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
+
+              {/* Pagination Buttons */}
+              <div className="flex justify-center mt-8">
+                <button
+                  onClick={handlePreviousPage}
+                  disabled={pageNumber === 1}
+                  className="bg-[#d84315] hover:bg-[#bf360c] text-white px-4 py-2 rounded-md mr-2"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={handleNextPage}
+                  className="bg-[#d84315] hover:bg-[#bf360c] text-white px-4 py-2 rounded-md"
+                >
+                  Next
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div>❌ No products available</div>
+              <div className="flex justify-center mt-8">
+                <button
+                  onClick={handlePreviousPage}
+                  disabled={pageNumber === 1}
+                  className="bg-[#d84315] hover:bg-[#bf360c] text-white px-4 py-2 rounded-md mr-2"
+                >
+                  Previous
+                </button>
+              </div>
+            </>
+          )}
         </section>
       </main>
     </div>
