@@ -92,6 +92,24 @@ const CheckoutComponent = () => {
       .toFixed(2);
   };
 
+  // api for invoking the handlePlaceOrder
+  const checkMaxOrder = async () => {
+    try {
+      const response = await axiosInstance.get("/check-max-order");
+      if (response.status === 200) {
+        await handlePlaceOrder();
+      }
+    } catch (error) {
+      console.error("error", error);
+      SweetAlert.fire({
+        title: "Max Orders Reached!",
+        text: "We're sorry! The maximum number of orders for today has been reached. Please try again tomorrow.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
   // function for placing the order for the products
   const handlePlaceOrder = async () => {
     if (!selectedAddress || !paymentMethod) {
@@ -115,13 +133,6 @@ const CheckoutComponent = () => {
         phone: user?.phoneNumber,
       };
 
-      const scriptLoaded = await loadScript(
-        "https://checkout.razorpay.com/v1/checkout.js"
-      );
-
-      if (!scriptLoaded) {
-        throw new Error("Failed to load Razorpay script");
-      }
       const response = await axiosInstance.post("/online-payment", {
         amount: parseFloat(getTotalPrice()),
         userId: user?._id,
@@ -129,6 +140,14 @@ const CheckoutComponent = () => {
         email: user?.email,
         phone: user?.phoneNumber,
       });
+
+      const scriptLoaded = await loadScript(
+        "https://checkout.razorpay.com/v1/checkout.js"
+      );
+
+      if (!scriptLoaded) {
+        throw new Error("Failed to load Razorpay script");
+      }
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
@@ -176,14 +195,22 @@ const CheckoutComponent = () => {
       };
       const razor = new (window as any).Razorpay(options);
       razor.open();
-    } catch (error) {
-      console.error("Error placing order:", error);
-      SweetAlert.fire({
-        title: "Order Failed!",
-        text: "Oops! Something went wrong while placing your order. Please try again later or contact support if the issue persists.",
-        icon: "error",
-        confirmButtonText: "Try Again",
-      });
+    } catch (error: any) {
+      if (error.response?.status === 400) {
+        SweetAlert.fire({
+          title: "Max Orders Reached!",
+          text: "We're sorry! The maximum number of orders for today has been reached. Please try again tomorrow.",
+          icon: "warning",
+          confirmButtonText: "OK",
+        });
+      } else {
+        SweetAlert.fire({
+          title: "Payment Failed!",
+          text: "Oops! Something went wrong while processing your payment. Please try again later.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
     }
   };
 
@@ -314,7 +341,7 @@ const CheckoutComponent = () => {
                   </span>
                 </div>
                 <button
-                  onClick={handlePlaceOrder}
+                  onClick={checkMaxOrder}
                   className="w-full bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-full"
                 >
                   Place Order

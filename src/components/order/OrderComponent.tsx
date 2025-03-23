@@ -92,9 +92,10 @@ const OrderHistory = () => {
   };
 
   // function for returning the order
-  const handleTrackOrder = (trackingId: number) => {
+  const handleTrackOrder = (trackingId: string) => {
     try {
-      // for redirecting to the postal tracking page
+      const trackingUrl = `https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx?articleNumber=${trackingId}`;
+      window.open(trackingUrl, "_blank");
     } catch (error) {
       console.error("error", error);
     }
@@ -106,9 +107,21 @@ const OrderHistory = () => {
     // Logic for downloading the invoice
     try {
       const response = await axiosInstance.get(
-        `/order/invoice/${orderId}/${userId}`
+        `/order/invoice/${orderId}/${userId}`,
+        { responseType: "arraybuffer" }
       );
-      console.log("response", response.data);
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "invoice.pdf";
+      document.body.appendChild(a);
+      a.click();
+
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("error", error);
     }
@@ -261,13 +274,13 @@ const OrderHistory = () => {
                 <div className="mt-4 flex space-x-4">
                   {order.status === "shipped" && (
                     <button
-                      onClick={() => handleTrackOrder(order.id)}
+                      onClick={() => handleTrackOrder(order.trackingId)}
                       className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full"
                     >
                       Track Order
                     </button>
                   )}
-                  {order.status !== "Order Received" && (
+                  {order.status == "delivered" && (
                     <button
                       onClick={() => handleDownloadInvoice(order.id)}
                       className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-full"
