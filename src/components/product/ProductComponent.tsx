@@ -65,14 +65,16 @@ const ProductComponent = () => {
                     key={book._id}
                     className="bg-white rounded-lg shadow overflow-hidden"
                   >
-                    <Image
-                      src={book.images[1]}
-                      alt={book.bookName}
-                      width={150}
-                      height={200}
-                      className="w-full h-60 object-cover"
-                    />
-                    <div className="p-4">
+                    <div className="relative h-96 bg-gray-200">
+                      <Image
+                        src={book.images[0]}
+                        alt="Book_name"
+                        width={150}
+                        height={400}
+                        className="w-full h-[400px] object-fit"
+                      />
+                    </div>
+                    <div className="p-4 bg-gray-100">
                       <h3 className="font-medium text-[#333333] mb-2">
                         Book Title {book.bookName}
                       </h3>
