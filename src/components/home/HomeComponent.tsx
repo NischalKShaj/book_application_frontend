@@ -75,37 +75,54 @@ const HomeComponent = () => {
                   Explore Books
                 </button>
               </div>
+
+              {/* Quote and Image Container */}
               <div className="w-full md:w-1/3">
-                <div className="bg-white rounded-lg shadow-lg border border-[#d4bfa5] h-[200px] w-[300px] flex items-center justify-center p-4">
-                  <p className="text-2xl italic text-center text-[#4a4a4a]">
+                <div className="bg-white rounded-lg shadow-lg border border-[#d4bfa5] h-[200px] w-[300px] flex items-center justify-between p-4">
+                  {/* Quote Text - Positioned Side-by-Side with Image */}
+                  <Image
+                    src="/guru.png"
+                    alt="guru"
+                    width={100}
+                    height={150}
+                    className="w-1/2 h-[150px] object-contain rounded-lg"
+                  />
+                  <p className="text-xl italic text-[#4a4a4a] w-1/2 text-left">
                     {quotes[currentQuoteIndex]}
                   </p>
+
+                  {/* Image - Positioned Next to the Quote */}
                 </div>
               </div>
             </div>
           </section>
-          <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-[#1a237e] mb-4">
+
+          <section className="mb-12 px-4">
+            <h2 className="text-2xl font-semibold text-[#1a237e] mb-4 text-center md:text-left">
               Bestsellers
             </h2>
+
             <div
               onClick={handleProduct}
-              className="grid grid-cols-2 md:grid-cols-4 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
             >
               {products.slice(0, 4).map((book) => (
                 <div
                   key={book._id}
-                  className="bg-white rounded-lg shadow overflow-hidden"
+                  className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105"
                 >
-                  <div className="relative h-96 bg-gray-200">
+                  {/* Image Container */}
+                  <div className="relative h-80 sm:h-96 bg-gray-200">
                     <Image
                       src={book.images[0]}
-                      alt="Book_name"
+                      alt={book.bookName}
                       width={150}
                       height={400}
-                      className="w-full h-[400px] object-fit"
+                      className="w-full h-full object-fit"
                     />
                   </div>
+
+                  {/* Book Details */}
                   <div className="p-4 bg-gray-100">
                     <h3 className="font-bold text-lg text-[#333333] mb-2">
                       {book.bookName}

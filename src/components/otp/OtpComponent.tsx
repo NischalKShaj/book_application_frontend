@@ -8,6 +8,7 @@ import { RandomStyle } from "@/types/types";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { userStore } from "@/store/userStore";
 
 const OtpComponent = () => {
   const [randomValues, setRandomValues] = useState<RandomStyle[]>([]);
@@ -15,8 +16,15 @@ const OtpComponent = () => {
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(120); // 2 minutes in seconds
   const [canResend, setCanResend] = useState(false);
+  const user = userStore((state) => state.user);
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [router, user]);
 
   useEffect(() => {
     // Generate random values on the client side

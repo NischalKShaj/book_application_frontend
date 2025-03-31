@@ -70,7 +70,9 @@ const Header = () => {
   };
 
   return (
-    <div className="bg-[#1a237e] text-white p-4">
+    <div className="bg-[#1a237e] text-white p-4 relative">
+      {" "}
+      {/* Make header relative */}
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <div className="flex items-center space-x-2">
@@ -93,12 +95,12 @@ const Header = () => {
           </Link>
         </nav>
 
-        {/* Login and Signup Buttons for larger screens */}
+        {/* User Actions (Login/Signup/Dropdown) */}
         {user ? (
-          <div className="hidden md:flex items-center space-x-3 relative">
+          <div className="flex items-center space-x-3 cursor-pointer relative">
             <span
-              className="cursor-pointer"
               onClick={() => setDropdownOpen((prev) => !prev)}
+              className="hidden md:block"
             >
               {user.username}
             </span>
@@ -118,45 +120,6 @@ const Header = () => {
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
               </svg>
             </Link>
-
-            {/* Dropdown Menu */}
-            {dropdownOpen && (
-              <div
-                ref={dropdownRef}
-                className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-lg border border-gray-200 w-48"
-              >
-                {/* Profile Section */}
-                <button
-                  onClick={handleProfilePage}
-                  className="block w-full rounded-t-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black"
-                >
-                  Profile
-                </button>
-                <hr className="border-gray-200" />
-                {/* Orders Section */}
-                <button
-                  onClick={handleOrderPage}
-                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black"
-                >
-                  Orders
-                </button>
-                <hr className="border-gray-200" />
-                <button
-                  onClick={handleContactPage}
-                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black"
-                >
-                  Contact Us
-                </button>
-                <hr className="border-gray-200" />
-                {/* Logout Button */}
-                <button
-                  onClick={logout}
-                  className="block w-full text-left px-4 py-2 text-white bg-[#d84315] hover:bg-[#bf360c] rounded-b-lg"
-                >
-                  Logout
-                </button>
-              </div>
-            )}
           </div>
         ) : (
           <div className="hidden md:flex space-x-3">
@@ -183,8 +146,43 @@ const Header = () => {
           {open ? <FaTimes size={24} /> : <FaBars size={24} />}
         </button>
       </div>
-
-      {/* Dropdown Menu for Mobile */}
+      {/* Dropdown Menu */}
+      {dropdownOpen &&
+        user && ( // Show only if dropdown is open and user is logged in
+          <div
+            ref={dropdownRef}
+            className="absolute top-full right-36 mt-2 bg-white shadow-lg rounded-lg border border-gray-200 w-48 z-10" // added z-10
+          >
+            <button
+              onClick={handleProfilePage}
+              className="block w-full rounded-t-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black"
+            >
+              Profile
+            </button>
+            <hr className="border-gray-200" />
+            <button
+              onClick={handleOrderPage}
+              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black"
+            >
+              Orders
+            </button>
+            <hr className="border-gray-200" />
+            <button
+              onClick={handleContactPage}
+              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-black"
+            >
+              Contact Us
+            </button>
+            <hr className="border-gray-200" />
+            <button
+              onClick={logout}
+              className="block w-full text-left px-4 py-2 text-white bg-[#d84315] hover:bg-[#bf360c] rounded-b-lg"
+            >
+              Logout
+            </button>
+          </div>
+        )}
+      {/* Mobile Menu */}
       {open && (
         <div className="flex flex-col items-center md:hidden space-y-3 mt-3">
           <Link href="/" className="hover:text-[#f5e6d3]">
@@ -193,21 +191,50 @@ const Header = () => {
           <Link href="/product" className="hover:text-[#f5e6d3]">
             Books
           </Link>
-          <Link href="/about" className="hover:text-[#f5e6d3] text-[#f5e6d3]">
+          <Link href="/about" className="hover:text-[#f5e6d3]">
             About
           </Link>
-          <button
-            onClick={login}
-            className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 text-lg rounded-md w-full"
-          >
-            Login
-          </button>
-          <button
-            onClick={signup}
-            className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 text-lg rounded-md w-full"
-          >
-            Signup
-          </button>
+          {user ? (
+            <div className="flex flex-col items-center">
+              <span
+                className="cursor-pointer"
+                onClick={() => setDropdownOpen((prev) => !prev)}
+              >
+                {user.username}
+              </span>
+              {/* <Link href="/cart">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-6 h-6"
+                >
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+              </Link> */}
+            </div>
+          ) : (
+            <div className="flex space-x-3">
+              <button
+                onClick={login}
+                className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 rounded-md"
+              >
+                Login
+              </button>
+              <button
+                onClick={signup}
+                className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-2 rounded-md"
+              >
+                Signup
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

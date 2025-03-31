@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // file to create the cart component
 "use client";
 
@@ -17,6 +18,10 @@ const CartComponents = () => {
   const user = userStore((state) => state.user);
   const [isLoading, setIsLoading] = useState(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [expandedItems, setExpandedItems] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const maxChars = 50;
 
   // function for loading the cart contents of the user
   const loadCart = async (id: string | undefined) => {
@@ -40,6 +45,14 @@ const CartComponents = () => {
     } catch (error) {
       console.error("error", error);
     }
+  };
+
+  // for toggling the read-more
+  const toggleReadMore = (id: string | number) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [id]: !prev[id], // Toggle expansion for the clicked item
+    }));
   };
 
   useEffect(() => {
@@ -137,10 +150,15 @@ const CartComponents = () => {
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-[#1a237e] mb-8">Your Cart</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-[#1a237e] mb-8 text-center sm:text-left">
+          Your Cart
+        </h1>
+
         {cartItems?.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-8 text-center">
-            <p className="text-2xl text-[#333333] mb-4">Your cart is empty</p>
+            <p className="text-xl sm:text-2xl text-[#333333] mb-4">
+              Your cart is empty
+            </p>
             <button
               onClick={handleContinueShopping}
               className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-full"
@@ -154,25 +172,47 @@ const CartComponents = () => {
               {cartItems?.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center border-b border-gray-200 p-4"
+                  className="flex flex-col sm:flex-row items-center border-b border-gray-200 p-4"
                 >
-                  <Image
-                    src={item.images[1]}
-                    alt={item.title}
-                    width={300}
-                    height={390}
-                    className="rounded-md mr-4"
-                  />
-                  <div className="flex-grow">
+                  {/* Image */}
+                  <div className="w-full sm:w-1/4 mb-4 sm:mb-0 flex justify-center">
+                    <Image
+                      src={item.images[1]}
+                      alt={item.title}
+                      width={200}
+                      height={260}
+                      className="rounded-md"
+                    />
+                  </div>
+
+                  {/* Product Details */}
+                  <div className="sm:w-1/2 text-center sm:text-left">
                     <h3 className="font-bold text-[#333333] mb-1">
                       {item.title}
                     </h3>
-                    <h3 className="font-medium text-[#333333] mb-1">
-                      {item.description}
-                    </h3>
-                    <p className="text-[#d84315] font-bold">₹{item.price}</p>
+
+                    {/* Description */}
+                    <p className="font-medium text-gray-600 mb-1 text-sm">
+                      {expandedItems[item.id]
+                        ? item.description
+                        : `${item.description.slice(0, maxChars)}...`}
+                      {item.description.length > maxChars && (
+                        <button
+                          onClick={() => toggleReadMore(item.id)}
+                          className="text-[#d84315] font-semibold ml-1"
+                        >
+                          {expandedItems[item.id] ? "Read Less" : "Read More"}
+                        </button>
+                      )}
+                    </p>
+
+                    <p className="text-[#d84315] font-bold text-lg">
+                      ₹{item.price}
+                    </p>
                   </div>
-                  <div className="flex items-center">
+
+                  {/* Quantity & Actions */}
+                  <div className="flex items-center mt-4 sm:mt-0">
                     <button
                       onClick={() => handleQuantityChange(item.id, -1)}
                       disabled={item.quantity === 1}
@@ -189,10 +229,12 @@ const CartComponents = () => {
                     </span>
                     <button
                       onClick={() => handleQuantityChange(item.id, 1)}
-                      className={`bg-gray-200 text-gray-600 px-2 py-1 rounded-r`}
+                      className="bg-gray-200 text-gray-600 px-2 py-1 rounded-r"
                     >
                       +
                     </button>
+
+                    {/* Remove Button */}
                     <button
                       onClick={() => clearItem(item.id)}
                       className="flex items-center text-red-600 hover:text-red-800 ml-4"
@@ -203,25 +245,29 @@ const CartComponents = () => {
                 </div>
               ))}
             </div>
+
+            {/* Checkout Section */}
             <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-center mb-4 text-center sm:text-left">
                 <span className="text-xl font-semibold text-[#333333]">
                   Total:
                 </span>
-                <span className="text-2xl font-bold text-[#d84315]">
+                <span className="text-2xl font-bold text-[#d84315] mt-2 sm:mt-0">
                   ₹{getTotalPrice()}
                 </span>
               </div>
-              <div className="flex justify-between">
+
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row justify-center sm:justify-between gap-4">
                 <button
                   onClick={handleContinueShopping}
-                  className="bg-gray-200 hover:bg-gray-300 text-[#333333] px-6 py-3 text-lg rounded-full"
+                  className="bg-gray-200 hover:bg-gray-300 text-[#333333] px-6 py-3 text-lg rounded-full w-full sm:w-auto"
                 >
                   Continue Shopping
                 </button>
                 <button
                   onClick={handleCheckoutPage}
-                  className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-full"
+                  className="bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-full w-full sm:w-auto"
                 >
                   Proceed to Checkout
                 </button>

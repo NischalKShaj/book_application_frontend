@@ -25,6 +25,10 @@ const CheckoutComponent = () => {
   const [address, setAddress] = useState<Address | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const [expandedItems, setExpandedItems] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const maxChars = 50;
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -35,6 +39,14 @@ const CheckoutComponent = () => {
       loadAddress(id);
     }
   }, [isAuthorized, router, user?._id]);
+
+  // for toggling the read-more
+  const toggleReadMore = (id: string | number) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [id]: !prev[id], // Toggle expansion for the clicked item
+    }));
+  };
 
   // function for loading the cart data
   const loadCart = async (id: string | undefined) => {
@@ -298,41 +310,51 @@ const CheckoutComponent = () => {
             </div>
           </div>
 
-          <div>
-            <h2 className="text-2xl font-semibold text-[#333333] mb-4">
+          <div className="p-4">
+            <h2 className="text-2xl font-semibold text-[#333333] mb-4 text-center md:text-left">
               Order Summary
             </h2>
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white rounded-lg shadow overflow-hidden p-4">
               {cartItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center border-b border-gray-200 p-4"
+                  className="flex flex-col md:flex-row items-center md:items-start border-b border-gray-200 p-4 gap-4"
                 >
                   <Image
                     src={item.images[0]}
                     alt={item.title}
-                    width={300}
-                    height={390}
-                    className="rounded-md mr-4"
+                    width={200}
+                    height={260}
+                    className="rounded-md w-full md:w-[120px] lg:w-[150px] object-cover"
                   />
-                  <div className="flex-grow">
-                    <h3 className="font-medium text-[#333333] mb-1">
+                  <div className="flex flex-col flex-grow text-center md:text-left">
+                    <h3 className="font-bold text-lg text-[#333333]">
                       {item.title}
                     </h3>
-                    <h3 className="font-medium text-[#333333] mb-1">
-                      {item.description}
-                    </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="font-medium text-gray-600 mb-1 text-sm">
+                      {expandedItems[item.id]
+                        ? item.description
+                        : `${item.description.slice(0, maxChars)}...`}
+                      {item.description.length > maxChars && (
+                        <button
+                          onClick={() => toggleReadMore(item.id)}
+                          className="text-[#d84315] font-semibold ml-1"
+                        >
+                          {expandedItems[item.id] ? "Read Less" : "Read More"}
+                        </button>
+                      )}
+                    </p>
+                    <p className="text-sm text-gray-600 mt-1">
                       Quantity: {item.quantity}
                     </p>
                   </div>
-                  <p className="text-[#d84315] font-bold">
+                  <p className="text-[#d84315] font-bold text-lg">
                     ₹{(item.price * item.quantity).toFixed(2)}
                   </p>
                 </div>
               ))}
               <div className="p-4">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex flex-col md:flex-row justify-between items-center mb-4">
                   <span className="text-xl font-semibold text-[#333333]">
                     Total:
                   </span>
@@ -342,7 +364,7 @@ const CheckoutComponent = () => {
                 </div>
                 <button
                   onClick={checkMaxOrder}
-                  className="w-full bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-full"
+                  className="w-full bg-[#d84315] hover:bg-[#bf360c] text-white px-6 py-3 text-lg rounded-full transition duration-300 ease-in-out"
                 >
                   Place Order
                 </button>
