@@ -85,10 +85,12 @@ const AddressModal = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-xl">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6">Add Address</h2>
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 w-11/12 sm:w-full max-w-xl">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">
+          Add Address
+        </h2>
         <form onSubmit={handleSubmit}>
-          <div className="mb-5">
+          <div className="mb-3 sm:mb-5">
             <label
               htmlFor="name"
               className="block text-lg font-medium text-gray-700 mb-2"
@@ -105,7 +107,7 @@ const AddressModal = ({
               required
             />
           </div>
-          <div className="mb-5">
+          <div className="mb-3 sm:mb-5">
             <label
               htmlFor="fullAddress"
               className="block text-lg font-medium text-gray-700 mb-2"
@@ -122,7 +124,7 @@ const AddressModal = ({
               required
             />
           </div>
-          <div className="mb-5">
+          <div className="mb-3 sm:mb-5">
             <label
               htmlFor="locality"
               className="block text-lg font-medium text-gray-700 mb-2"
@@ -139,7 +141,7 @@ const AddressModal = ({
               required
             />
           </div>
-          <div className="mb-5">
+          <div className="mb-3 sm:mb-5">
             <label
               htmlFor="state"
               className="block text-lg font-medium text-gray-700 mb-2"
@@ -156,7 +158,7 @@ const AddressModal = ({
               required
             />
           </div>
-          <div className="mb-5">
+          <div className="mb-3 sm:mb-5">
             <label
               htmlFor="city"
               className="block text-lg font-medium text-gray-700 mb-2"
@@ -173,7 +175,7 @@ const AddressModal = ({
               required
             />
           </div>
-          <div className="mb-5">
+          <div className="mb-3 sm:mb-5">
             <label
               htmlFor="pincode"
               className="block text-lg font-medium text-gray-700 mb-2"
@@ -190,7 +192,7 @@ const AddressModal = ({
               required
             />
           </div>
-          <div className="mb-5">
+          <div className="mb-3 sm:mb-5">
             <label
               htmlFor="phone"
               className="block text-lg font-medium text-gray-700 mb-2"
@@ -211,13 +213,13 @@ const AddressModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 bg-gray-300 rounded-lg text-gray-700 hover:bg-gray-400"
+              className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-300 rounded-lg text-gray-700 hover:bg-gray-400"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-3 bg-[#d84315] hover:bg-[#bf360c] rounded-lg text-white"
+              className="px-4 sm:px-6 py-2 sm:py-3 bg-[#d84315] hover:bg-[#bf360c] rounded-lg text-white"
             >
               {address ? "Update Address" : "Save Address"}
             </button>

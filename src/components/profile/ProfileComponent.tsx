@@ -70,59 +70,57 @@ const ProfileComponent = () => {
     router.push("/product");
   };
   return (
-    <div className="flex h-full">
+    <div className="flex flex-col md:flex-row h-full">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 mt-10 mr-10 bg-gray-100 p-10">
-        <h1 className="text-2xl font-bold mb-6">My Profile</h1>
-
-        {/* Profile Overview */}
+      <div className="flex-1 mt-6 md:mt-10 mx-4 md:mx-10 bg-gray-100 p-4 sm:p-6 md:p-10">
+        <h1 className="text-2xl font-bold mb-6 text-center md:text-left">
+          My Profile
+        </h1>
 
         {/* Order History */}
-        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+        <div className="bg-white shadow-md rounded-lg p-4 sm:p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">
             🛍️ Recently Ordered Items
           </h2>
-          <div className="flex flex-row space-x-8">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {recentOrders.map((orders, index) => (
               <div
                 key={index}
-                className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+                className="bg-white border border-gray-200 rounded-lg shadow p-4 dark:bg-gray-800 dark:border-gray-700"
               >
                 <Image
-                  className="p-8 rounded-t-lg"
+                  className="rounded-t-lg mx-auto"
                   src={orders.image}
                   width={200}
                   height={200}
                   alt="product image"
                 />
 
-                <div className="px-5 pb-5">
-                  <a href="#">
-                    <h5 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                      {orders.productName}
-                    </h5>
-                  </a>
+                <div className="px-4 pb-5 text-center">
+                  <h5 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
+                    {orders.productName}
+                  </h5>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-base font-bold text-gray-900 dark:text-white">
-                      Quantity: {orders.quantity}
-                    </span>
-                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    Quantity:{" "}
+                    <span className="font-bold">{orders.quantity}</span>
+                  </p>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-base font-bold text-gray-900 dark:text-white">
-                      Total Amount: {orders.totalAmount}
-                    </span>
-                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    Total Amount:{" "}
+                    <span className="font-bold">₹{orders.totalAmount}</span>
+                  </p>
                 </div>
               </div>
             ))}
           </div>
+
           {recentOrders.length === 0 && (
-            <p className="text-gray-600">
+            <p className="text-gray-600 text-center mt-4">
               No recent orders.{" "}
               <span
                 onClick={handleProductPage}
@@ -135,22 +133,22 @@ const ProfileComponent = () => {
         </div>
 
         {/* Address Management */}
-        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+        <div className="bg-white shadow-md rounded-lg p-4 sm:p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">
             🏡 Last Delivery Addresses
           </h2>
 
           {recentAddresses.length > 0 ? (
-            <div className="flex flex-wrap gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {recentAddresses.map((address, index) => (
                 <div
                   key={index}
-                  className="w-full sm:w-[300px] md:w-[350px] lg:w-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-5"
+                  className="bg-white border border-gray-200 rounded-lg shadow p-5 dark:bg-gray-800 dark:border-gray-700"
                 >
-                  <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white mb-4">
+                  <h5 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-white mb-4">
                     Delivery Details
                   </h5>
-                  <ul className="text-gray-700 dark:text-gray-300 space-y-2">
+                  <ul className="text-gray-700 dark:text-gray-300 space-y-2 text-sm">
                     <li>
                       <span className="font-semibold">Receiver Name: </span>
                       {address.addresseeName}
@@ -184,8 +182,8 @@ const ProfileComponent = () => {
               ))}
             </div>
           ) : (
-            <p className="text-gray-600">
-              No recent orders.{" "}
+            <p className="text-gray-600 text-center mt-4">
+              No recent addresses.{" "}
               <span
                 onClick={handleProductPage}
                 className="text-blue-500 cursor-pointer"

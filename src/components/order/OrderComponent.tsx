@@ -189,14 +189,17 @@ const OrderHistory = () => {
                   <h3 className="text-lg font-medium text-[#333333]">
                     Order ID: #{order.id}
                   </h3>
+
+                  <p className="text-gray-500">
+                    {new Date(order.date).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="mb-4 flex justify-between items-center">
                   {order.trackingId != "No id found" && (
                     <h3 className="text-lg font-medium text-[#333333]">
                       Tracking ID: #{order.trackingId}
                     </h3>
                   )}
-                  <p className="text-gray-500">
-                    {new Date(order.date).toLocaleDateString()}
-                  </p>
                 </div>
 
                 {/* Order Items */}
